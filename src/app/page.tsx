@@ -172,7 +172,7 @@ export default function Home() {
               </button>
             )}
             <a
-              href="https://github.com"
+              href="https://github.com/GhostyTechno76/ClearText-AI"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -313,7 +313,7 @@ export default function Home() {
 
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Sidebar Customization Toolbar */}
-            <aside className="lg:w-72 flex-shrink-0 lg:sticky lg:top-20 lg:self-start">
+            <aside className="lg:w-72 flex-shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:self-start">
               <Toolbar
                 settings={settings}
                 onSettingsChange={setSettings}
@@ -409,7 +409,7 @@ export default function Home() {
       <footer className="border-t mt-auto py-6" style={{ borderColor: theme.border }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <p style={{ color: theme.secondaryText }}>
-            &copy; 2024 ClearText AI — Built for neurodivergent and accessible web reading.
+            &copy; 2026 ClearText AI — Built for neurodivergent and accessible web reading.
           </p>
           <div className="flex items-center gap-4 font-medium" style={{ color: theme.secondaryText }}>
             <span>WCAG 2.1 AAA</span>
@@ -417,6 +417,8 @@ export default function Home() {
             <span>OpenDyslexic</span>
             <span>&bull;</span>
             <span>Web Speech API</span>
+            <span>&bull;</span>
+            <span>Built by SKD</span>
           </div>
         </div>
       </footer>
