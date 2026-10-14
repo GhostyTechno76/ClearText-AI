@@ -31,10 +31,10 @@
 - **Soft Sepia**: Calming warm parchment tones (`#f4ecd8` / `#432818`) proven to decrease visual fatigue and photophobia.
 
 ### 4. 🤖 AI Simplification & Bullet Summarizer
-- **Simplify (5th-Grade Level)**: Uses OpenAI `gpt-4o-mini` with custom prompt engineering to rewrite technical jargon into clear, direct English while preserving all core facts.
+- **Simplify (5th-Grade Level)**: Powered by Google Gemini API (`gemini-3.5-flash-lite` / `gemini-3.8-flash`) and OpenAI fallback, rewriting technical jargon into clear, direct English while preserving all core facts.
 - **Key Bullets**: Synthesizes long articles into structured, high-impact takeaways.
 - **Dual-View Toggle**: Switch seamlessly between the original text and the AI-simplified version.
-- **Smart Offline Fallback**: Works completely offline or without an OpenAI API key out-of-the-box using an intelligent rule-based plain-English dictionary and sentence extractor.
+- **Smart Offline Fallback**: Works completely offline or without an API key out-of-the-box using an intelligent rule-based plain-English dictionary and sentence extractor.
 
 ### 5. 🔊 Synchronized Audio Read-Aloud Player
 - **Zero External Dependencies**: Powered by the native browser Web Speech API (`window.speechSynthesis`).
@@ -59,7 +59,7 @@
 | **Icons** | [Lucide React](https://lucide.dev/) |
 | **Fonts** | `Inter` (Google Fonts) & `OpenDyslexic` (Webfont) |
 | **Scraping** | `@mozilla/readability`, `jsdom` |
-| **AI / LLM** | [OpenAI API](https://platform.openai.com/) (`gpt-4o-mini`) + local intelligent fallback |
+| **AI / LLM** | [Google Gemini API](https://ai.google.dev/) (`gemini-3.5-flash-lite`), OpenAI fallback, + local intelligent fallback |
 | **Speech** | Web Speech API (`SpeechSynthesisUtterance`) |
 | **Deployment** | Vercel Edge / Serverless Ready |
 
@@ -113,7 +113,7 @@ npm install
 ```
 
 ### 2. Environment Configuration (Optional)
-The application works immediately out-of-the-box without an API key using smart dynamic fallback data. To enable live OpenAI `gpt-4o-mini` generation:
+The application works immediately out-of-the-box without an API key using smart dynamic fallback data. To enable live AI simplification via Google Gemini:
 
 ```bash
 cp .env.example .env.local
@@ -121,7 +121,11 @@ cp .env.example .env.local
 
 Edit `.env.local`:
 ```env
-OPENAI_API_KEY=sk-your-openai-key-here
+# Google Gemini API Key (Recommended)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# OpenAI API Key (Optional)
+OPENAI_API_KEY=your_openai_key_here
 ```
 
 ### 3. Run Development Server (Port 3001)

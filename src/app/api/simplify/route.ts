@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 
 const SAMPLE_SIMPLIFY = `Here is a simpler version of the text:
@@ -80,7 +81,6 @@ function smartSimplifyText(text: string): string {
 
   const simplifiedParagraphs = paragraphs.map(para => {
     let simplified = para;
-    // Replace complex jargon
     for (const [complex, simple] of Object.entries(SIMPLIFY_MAP)) {
       const regex = new RegExp(`\\b${complex}\\b`, 'gi');
       simplified = simplified.replace(regex, simple);
@@ -98,7 +98,7 @@ function smartSummarizeText(text: string): string {
   for (const para of paragraphs) {
     const rawSentences = para.split(/(?<=[.?!])\s+/).map(s => s.trim()).filter(s => s.length > 25);
     if (rawSentences.length > 0) {
-      sentences.push(rawSentences[0]); // Take the lead topic sentence of each paragraph
+      sentences.push(rawSentences[0]);
       if (rawSentences.length > 2) {
         sentences.push(rawSentences[Math.floor(rawSentences.length / 2)]);
       }
@@ -129,75 +129,114 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    const openaiKey = process.env.OPENAI_API_KEY;
 
-    // Fallback to intelligent local simplification if no API key is provided
-    if (!apiKey || apiKey === 'your_key_here') {
-      await new Promise(resolve => setTimeout(resolve, 800));
+    const systemPrompt =
+      mode === 'simplify'
+        ? 'You are an accessibility assistant. Rewrite the following text into plain, direct, 5th-grade level English while preserving all core facts. Remove obscure jargon. Use short sentences. Keep paragraphs brief (2-3 sentences each). Maintain the overall meaning and essential information.'
+        : 'You are an accessibility assistant. Summarize the following text into clear, concise bullet points. Each bullet should capture one key fact or idea using plain, accessible language. Aim for 5-8 bullet points. Format each bullet starting with •.';
 
-      const isSample = text.toLowerCase().includes('visual word form area') || text.toLowerCase().includes('science of reading');
+    const truncatedText = text.slice(0, 10000);
 
-      if (isSample) {
-        return NextResponse.json({
-          result: mode === 'simplify' ? SAMPLE_SIMPLIFY : SAMPLE_SUMMARY,
-          isMock: true,
-        });
+    // 1. First priority: Google Gemini API
+    if (geminiKey && geminiKey !== 'your_gemini_api_key_here') {
+      try {
+        const ai = new GoogleGenAI({ apiKey: geminiKey });
+
+        // Try gemini-3.5-flash-lite, fallback to gemini-3.8-flash
+        const models = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
+        let lastError: unknown = null;
+
+        for (const model of models) {
+          try {
+            const response = await ai.models.generateContent({
+              model,
+              contents: truncatedText,
+              config: {
+                systemInstruction: systemPrompt,
+                temperature: 0.3,
+              },
+            });
+
+            const resultText = response.text?.trim();
+            if (resultText) {
+              return NextResponse.json({
+                result: resultText,
+                provider: 'gemini',
+                model,
+                isMock: false,
+              });
+            }
+          } catch (modelErr) {
+            lastError = modelErr;
+            console.warn(`Gemini model ${model} attempt failed, trying fallback:`, modelErr);
+          }
+        }
+
+        if (lastError) {
+          console.error('All Gemini model attempts failed:', lastError);
+        }
+      } catch (geminiError) {
+        console.error('Google Gemini API initialization/call error:', geminiError);
       }
+    }
 
-      // Generate dynamic fallback for custom text
-      const dynamicResult = mode === 'simplify' ? smartSimplifyText(text) : smartSummarizeText(text);
+    // 2. Second priority: OpenAI API (if configured)
+    if (openaiKey && openaiKey !== 'your_key_here' && openaiKey !== 'your_openai_key_here') {
+      try {
+        const openai = new OpenAI({ apiKey: openaiKey });
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: truncatedText },
+          ],
+          temperature: 0.4,
+          max_tokens: 2000,
+        });
+
+        const result = completion.choices[0]?.message?.content?.trim();
+        if (result) {
+          return NextResponse.json({
+            result,
+            provider: 'openai',
+            model: 'gpt-4o-mini',
+            isMock: false,
+          });
+        }
+      } catch (openAiError) {
+        console.error('OpenAI call error:', openAiError);
+      }
+    }
+
+    // 3. Fallback: Intelligent dynamic text processor (works offline / zero keys)
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    const isSample =
+      text.toLowerCase().includes('visual word form area') ||
+      text.toLowerCase().includes('science of reading');
+
+    if (isSample) {
       return NextResponse.json({
-        result: dynamicResult,
+        result: mode === 'simplify' ? SAMPLE_SIMPLIFY : SAMPLE_SUMMARY,
+        provider: 'fallback-sample',
         isMock: true,
       });
     }
 
-    const openai = new OpenAI({ apiKey });
+    const dynamicResult =
+      mode === 'simplify' ? smartSimplifyText(text) : smartSummarizeText(text);
 
-    const systemPrompt =
-      mode === 'simplify'
-        ? 'You are an accessibility assistant. Rewrite the following text into plain, direct, 5th-grade level English while preserving all core facts. Remove obscure jargon. Use short sentences. Keep paragraphs brief (2-3 sentences each). Maintain the overall structure and key information.'
-        : 'You are an accessibility assistant. Summarize the following text into clear, concise bullet points. Each bullet should capture one key fact or idea. Use plain language. Aim for 5-8 bullet points. Format each bullet starting with •';
-
-    const truncatedText = text.slice(0, 8000);
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: truncatedText },
-      ],
-      temperature: 0.4,
-      max_tokens: 2000,
+    return NextResponse.json({
+      result: dynamicResult,
+      provider: 'fallback-dynamic',
+      isMock: true,
     });
-
-    const result = completion.choices[0]?.message?.content;
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'AI returned an empty response. Please try again.' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ result, isMock: false });
   } catch (error: unknown) {
-    console.error('Simplify API error:', error);
-
-    const isAuthError =
-      error instanceof Error &&
-      'status' in error &&
-      (error as { status: number }).status === 401;
-
-    if (isAuthError) {
-      return NextResponse.json(
-        { error: 'Invalid OpenAI API key. Please check your configuration in .env.local.' },
-        { status: 401 }
-      );
-    }
-
+    console.error('Simplify API route fatal error:', error);
     return NextResponse.json(
-      { error: 'An error occurred while processing your request. Please try again.' },
+      { error: 'An unexpected error occurred while processing your request. Please try again.' },
       { status: 500 }
     );
   }
