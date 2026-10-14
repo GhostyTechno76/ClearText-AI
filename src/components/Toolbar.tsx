@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, BookOpen, Type, Minus, Plus, Sun, Moon, Contrast, Coffee } from 'lucide-react';
+import { Eye, BookOpen, Minus, Plus, Sun, Moon, Contrast, Coffee } from 'lucide-react';
 import { ThemeConfig, ThemeKey, ReaderSettings, themes } from '@/lib/themes';
 
 interface ToolbarProps {
@@ -28,7 +28,28 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
       role="toolbar"
       aria-label="Reader customization controls"
     >
-      <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.secondaryText }}>Display Settings</h3>
+      <div className="flex items-center justify-between pb-1 border-b" style={{ borderColor: theme.border }}>
+        <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.secondaryText }}>
+          Display Settings
+        </h3>
+        <button
+          onClick={() =>
+            onSettingsChange({
+              fontSize: 18,
+              lineHeight: 1.8,
+              letterSpacing: 0.02,
+              fontFamily: 'sans',
+              bionicReading: false,
+              theme: settings.theme,
+            })
+          }
+          className="text-[11px] underline transition-opacity hover:opacity-80"
+          style={{ color: theme.secondaryText }}
+          title="Reset typography settings to default"
+        >
+          Reset
+        </button>
+      </div>
 
       {/* Font Toggle */}
       <div className="space-y-2">
@@ -40,7 +61,7 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
             className="flex-1 py-2 px-3 rounded-lg text-xs font-medium border transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               backgroundColor: settings.fontFamily === 'sans' ? theme.accent : 'transparent',
-              color: settings.fontFamily === 'sans' ? '#ffffff' : theme.text,
+              color: settings.fontFamily === 'sans' ? theme.accentText : theme.text,
               borderColor: settings.fontFamily === 'sans' ? theme.accent : theme.border,
             }}
           >
@@ -52,9 +73,9 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
             className="flex-1 py-2 px-3 rounded-lg text-xs font-medium border transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               backgroundColor: settings.fontFamily === 'dyslexic' ? theme.accent : 'transparent',
-              color: settings.fontFamily === 'dyslexic' ? '#ffffff' : theme.text,
+              color: settings.fontFamily === 'dyslexic' ? theme.accentText : theme.text,
               borderColor: settings.fontFamily === 'dyslexic' ? theme.accent : theme.border,
-              fontFamily: 'OpenDyslexic, sans-serif',
+              fontFamily: 'OpenDyslexic, "Comic Sans MS", cursive, sans-serif',
             }}
           >
             Dyslexic
@@ -64,7 +85,7 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
 
       {/* Bionic Reading */}
       <div className="flex items-center justify-between">
-        <label htmlFor="bionic-toggle" className="text-xs font-medium flex items-center gap-2" style={{ color: theme.secondaryText }}>
+        <label htmlFor="bionic-toggle" className="text-xs font-medium flex items-center gap-2 cursor-pointer" style={{ color: theme.secondaryText }}>
           <Eye size={14} aria-hidden="true" />
           Bionic Reading
         </label>
@@ -85,10 +106,10 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
 
       {/* Font Size */}
       <div className="space-y-2">
-        <label className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
+        <div className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span className="flex items-center gap-2"><BookOpen size={14} aria-hidden="true" />Font Size</span>
-          <span>{settings.fontSize}px</span>
-        </label>
+          <span className="font-mono">{settings.fontSize}px</span>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => update({ fontSize: Math.max(14, settings.fontSize - 1) })}
@@ -101,15 +122,15 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
           <input
             type="range"
             min={14}
-            max={32}
+            max={36}
             step={1}
             value={settings.fontSize}
             onChange={e => update({ fontSize: Number(e.target.value) })}
             aria-label="Font size slider"
-            className="flex-1 accent-blue-500 h-1.5"
+            className="flex-1 accent-blue-500 h-1.5 cursor-pointer"
           />
           <button
-            onClick={() => update({ fontSize: Math.min(32, settings.fontSize + 1) })}
+            onClick={() => update({ fontSize: Math.min(36, settings.fontSize + 1) })}
             aria-label="Increase font size"
             className="p-1.5 rounded-lg border transition-all hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: theme.border, color: theme.text }}
@@ -121,10 +142,10 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
 
       {/* Line Height */}
       <div className="space-y-2">
-        <label className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
+        <div className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span>Line Height</span>
-          <span>{settings.lineHeight.toFixed(1)}</span>
-        </label>
+          <span className="font-mono">{settings.lineHeight.toFixed(1)}</span>
+        </div>
         <input
           type="range"
           min={1.2}
@@ -133,25 +154,25 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
           value={settings.lineHeight}
           onChange={e => update({ lineHeight: Number(e.target.value) })}
           aria-label="Line height slider"
-          className="w-full accent-blue-500 h-1.5"
+          className="w-full accent-blue-500 h-1.5 cursor-pointer"
         />
       </div>
 
       {/* Letter Spacing */}
       <div className="space-y-2">
-        <label className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
+        <div className="text-xs font-medium flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span>Letter Spacing</span>
-          <span>{settings.letterSpacing.toFixed(2)}em</span>
-        </label>
+          <span className="font-mono">{settings.letterSpacing.toFixed(2)}em</span>
+        </div>
         <input
           type="range"
           min={0}
-          max={0.2}
+          max={0.25}
           step={0.01}
           value={settings.letterSpacing}
           onChange={e => update({ letterSpacing: Number(e.target.value) })}
           aria-label="Letter spacing slider"
-          className="w-full accent-blue-500 h-1.5"
+          className="w-full accent-blue-500 h-1.5 cursor-pointer"
         />
       </div>
 
@@ -168,7 +189,7 @@ export default function Toolbar({ settings, onSettingsChange, theme }: ToolbarPr
               className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-medium border transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{
                 backgroundColor: settings.theme === key ? theme.accent : 'transparent',
-                color: settings.theme === key ? '#ffffff' : theme.text,
+                color: settings.theme === key ? theme.accentText : theme.text,
                 borderColor: settings.theme === key ? theme.accent : theme.border,
               }}
             >

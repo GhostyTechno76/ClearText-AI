@@ -1,12 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff');
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Regular.woff') format('woff'),
+       url('https://cdnjs.cloudflare.com/ajax/libs/open-dyslexic/1.0.3/OpenDyslexic-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,7 +15,8 @@
 
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff');
+  src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/woff/OpenDyslexic-Bold.woff') format('woff'),
+       url('https://cdnjs.cloudflare.com/ajax/libs/open-dyslexic/1.0.3/OpenDyslexic-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -22,17 +24,17 @@
 
 @layer base {
   * {
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-150;
   }
-  
+
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-500;
+    @apply outline-2 outline-offset-2 outline-blue-500 ring-2 ring-blue-400;
   }
 }
 
 @layer utilities {
   .bionic-bold {
-    font-weight: 700;
+    font-weight: 800 !important;
   }
 }
 
@@ -40,7 +42,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* Custom accessible scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -53,4 +55,17 @@ html {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* Print Styles */
+@media print {
+  header, aside, [role="toolbar"], [role="region"], footer, button {
+    display: none !important;
+  }
+  body, main, article {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
 }

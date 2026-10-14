@@ -8,26 +8,31 @@ export async function POST(request: NextRequest) {
 
     if (!url || typeof url !== 'string') {
       return NextResponse.json(
-        { error: 'Please provide a valid URL.' },
+        { error: 'Please provide a valid web URL.' },
         { status: 400 }
       );
+    }
+
+    let trimmedUrl = url.trim();
+    if (!/^https?:\/\//i.test(trimmedUrl)) {
+      trimmedUrl = `https://${trimmedUrl}`;
     }
 
     // Validate URL format
     let parsedUrl: URL;
     try {
-      parsedUrl = new URL(url);
+      parsedUrl = new URL(trimmedUrl);
       if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
         throw new Error('Invalid protocol');
       }
     } catch {
       return NextResponse.json(
-        { error: 'Please provide a valid HTTP or HTTPS URL.' },
+        { error: 'Please provide a valid HTTP or HTTPS website URL.' },
         { status: 400 }
       );
     }
 
-    // Fetch the page
+    // Fetch the page with timeout
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
@@ -36,45 +41,76 @@ export async function POST(request: NextRequest) {
       response = await fetch(parsedUrl.toString(), {
         signal: controller.signal,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; ClearTextAI/1.0; +https://cleartext.ai)',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
         },
       });
     } catch (fetchError: unknown) {
       clearTimeout(timeout);
-      const message = fetchError instanceof Error && fetchError.name === 'AbortError'
-        ? 'Request timed out. The website took too long to respond.'
-        : 'Could not fetch the URL. The website may be blocking automated requests.';
+      const isTimeout = fetchError instanceof Error && fetchError.name === 'AbortError';
+      const message = isTimeout
+        ? 'Request timed out after 15 seconds. The target website took too long to respond.'
+        : 'Could not connect to this URL. The server may be down or blocking automated requests.';
       return NextResponse.json({ error: message }, { status: 502 });
     }
     clearTimeout(timeout);
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: `Failed to fetch page (HTTP ${response.status}). The site may require login or be blocking requests.` },
+        {
+          error: `Could not retrieve page (HTTP ${response.status} ${response.statusText}). The site may require authentication or be protected by an anti-bot paywall.`,
+        },
         { status: 502 }
       );
     }
 
     const html = await response.text();
 
-    // Parse with Readability
+    // Parse with Readability via JSDOM
     const dom = new JSDOM(html, { url: parsedUrl.toString() });
     const reader = new Readability(dom.window.document);
     const article = reader.parse();
 
-    if (!article || !article.textContent?.trim()) {
+    let textContent = article?.textContent?.trim() || '';
+
+    // If Readability was too strict or returned empty, fallback to extracting main tag or body paragraphs
+    if (!textContent || textContent.length < 100) {
+      const doc = dom.window.document;
+      // remove script, style, nav, footer, aside
+      ['script', 'style', 'nav', 'footer', 'aside', 'header'].forEach(tag => {
+        doc.querySelectorAll(tag).forEach(el => el.remove());
+      });
+
+      const bodyParas = Array.from(doc.querySelectorAll('p, article, section, h1, h2, h3, h4, li'))
+        .map(el => el.textContent?.trim() || '')
+        .filter(t => t.length > 20);
+
+      if (bodyParas.length > 0) {
+        textContent = bodyParas.join('\n\n');
+      }
+    }
+
+    if (!textContent || textContent.length < 50) {
       return NextResponse.json(
-        { error: 'Could not extract readable content from this page. It may be paywalled or use heavy JavaScript rendering.' },
+        {
+          error:
+            'Could not extract readable article text from this page. It might be heavily client-side rendered (SPA) or paywalled. You can copy-paste the text directly using the "Direct Text Input" tab.',
+        },
         { status: 422 }
       );
     }
 
+    // Clean up excessive blank lines
+    textContent = textContent.replace(/\n{3,}/g, '\n\n');
+
     return NextResponse.json({
-      title: article.title || 'Untitled Article',
-      textContent: article.textContent.trim(),
-      siteName: article.siteName || parsedUrl.hostname,
+      title: article?.title || dom.window.document.title || parsedUrl.hostname,
+      textContent,
+      siteName: article?.siteName || parsedUrl.hostname.replace(/^www\./, ''),
     });
   } catch (error) {
     console.error('Parse URL error:', error);

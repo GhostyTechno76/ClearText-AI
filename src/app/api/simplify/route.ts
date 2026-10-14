@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const MOCK_SIMPLIFY = `Here is a simpler version of the text:
+const SAMPLE_SIMPLIFY = `Here is a simpler version of the text:
 
 Reading is something amazing our brains do. Even though people have been talking for a very long time, reading is pretty new — only about 5,000 years old. Our brains had to learn a new trick to do it.
 
@@ -19,7 +19,7 @@ Scientists found that simple changes can help a lot. Just adding more space betw
 
 The future is exciting! Smart computers can now make hard text easier to understand. Together with tools that let you change how text looks and listen to it being read aloud, more people than ever can read and learn from all kinds of information.`;
 
-const MOCK_SUMMARY = `Here are the key points:
+const SAMPLE_SUMMARY = `Here are the key points:
 
 • Reading is a relatively new skill for humans (only ~5,000 years old), and our brains had to adapt existing brain circuits to handle it
 
@@ -34,6 +34,82 @@ const MOCK_SUMMARY = `Here are the key points:
 • Bionic reading (bolding first portions of words) leverages the brain's word-completion prediction ability
 
 • AI-powered simplification and customizable reading tools are making information more accessible to all reading levels`;
+
+// Dictionary of complex words to 5th-grade friendly synonyms for smart offline fallback
+const SIMPLIFY_MAP: Record<string, string> = {
+  utilize: 'use',
+  utilized: 'used',
+  utilizing: 'using',
+  demonstrate: 'show',
+  demonstrates: 'shows',
+  demonstrated: 'showed',
+  facilitate: 'help',
+  facilitates: 'helps',
+  approximately: 'about',
+  subsequently: 'then',
+  fundamental: 'basic',
+  comprehend: 'understand',
+  comprehension: 'understanding',
+  numerous: 'many',
+  substantial: 'large',
+  commence: 'start',
+  commenced: 'started',
+  terminate: 'end',
+  terminated: 'ended',
+  implement: 'carry out',
+  implemented: 'carried out',
+  investigate: 'look into',
+  investigated: 'looked into',
+  endeavor: 'try',
+  endeavors: 'tries',
+  ascertain: 'find out',
+  elucidate: 'explain',
+  disseminate: 'spread',
+  preponderance: 'majority',
+  consequently: 'as a result',
+  furthermore: 'also',
+  moreover: 'also',
+  nevertheless: 'still',
+  notwithstanding: 'even though',
+  predominantly: 'mostly',
+};
+
+function smartSimplifyText(text: string): string {
+  const paragraphs = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
+  if (paragraphs.length === 0) return text;
+
+  const simplifiedParagraphs = paragraphs.map(para => {
+    let simplified = para;
+    // Replace complex jargon
+    for (const [complex, simple] of Object.entries(SIMPLIFY_MAP)) {
+      const regex = new RegExp(`\\b${complex}\\b`, 'gi');
+      simplified = simplified.replace(regex, simple);
+    }
+    return simplified;
+  });
+
+  return simplifiedParagraphs.join('\n\n');
+}
+
+function smartSummarizeText(text: string): string {
+  const paragraphs = text.split(/\n+/).map(p => p.trim()).filter(Boolean);
+  const sentences: string[] = [];
+
+  for (const para of paragraphs) {
+    const rawSentences = para.split(/(?<=[.?!])\s+/).map(s => s.trim()).filter(s => s.length > 25);
+    if (rawSentences.length > 0) {
+      sentences.push(rawSentences[0]); // Take the lead topic sentence of each paragraph
+      if (rawSentences.length > 2) {
+        sentences.push(rawSentences[Math.floor(rawSentences.length / 2)]);
+      }
+    }
+  }
+
+  const selected = sentences.slice(0, 7);
+  if (selected.length === 0) return '• ' + text.slice(0, 300);
+
+  return 'Key Takeaways:\n\n' + selected.map(s => `• ${s}`).join('\n\n');
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,12 +131,23 @@ export async function POST(request: NextRequest) {
 
     const apiKey = process.env.OPENAI_API_KEY;
 
-    // Fallback to mock data if no API key
+    // Fallback to intelligent local simplification if no API key is provided
     if (!apiKey || apiKey === 'your_key_here') {
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const isSample = text.toLowerCase().includes('visual word form area') || text.toLowerCase().includes('science of reading');
+
+      if (isSample) {
+        return NextResponse.json({
+          result: mode === 'simplify' ? SAMPLE_SIMPLIFY : SAMPLE_SUMMARY,
+          isMock: true,
+        });
+      }
+
+      // Generate dynamic fallback for custom text
+      const dynamicResult = mode === 'simplify' ? smartSimplifyText(text) : smartSummarizeText(text);
       return NextResponse.json({
-        result: mode === 'simplify' ? MOCK_SIMPLIFY : MOCK_SUMMARY,
+        result: dynamicResult,
         isMock: true,
       });
     }
@@ -96,17 +183,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ result, isMock: false });
   } catch (error: unknown) {
     console.error('Simplify API error:', error);
-    
-    const isAuthError = error instanceof Error && 'status' in error && (error as { status: number }).status === 401;
+
+    const isAuthError =
+      error instanceof Error &&
+      'status' in error &&
+      (error as { status: number }).status === 401;
+
     if (isAuthError) {
       return NextResponse.json(
-        { error: 'Invalid OpenAI API key. Please check your configuration.' },
+        { error: 'Invalid OpenAI API key. Please check your configuration in .env.local.' },
         { status: 401 }
       );
     }
 
     return NextResponse.json(
-      { error: 'An error occurred while processing your request.' },
+      { error: 'An error occurred while processing your request. Please try again.' },
       { status: 500 }
     );
   }

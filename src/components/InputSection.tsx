@@ -1,16 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { Link2, Type, FileText, Loader2, AlertCircle } from 'lucide-react';
+import { Link2, Type, FileText, Loader2, AlertCircle, X } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 
 interface InputSectionProps {
   onContentLoaded: (data: { title: string; textContent: string; siteName: string }) => void;
   theme: ThemeConfig;
   onLoadSample: () => void;
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
-export default function InputSection({ onContentLoaded, theme, onLoadSample }: InputSectionProps) {
+export default function InputSection({
+  onContentLoaded,
+  theme,
+  onLoadSample,
+  onLoadingChange,
+}: InputSectionProps) {
   const [activeTab, setActiveTab] = useState<'url' | 'text'>('url');
   const [url, setUrl] = useState('');
   const [textInput, setTextInput] = useState('');
@@ -18,17 +24,26 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
   const [error, setError] = useState<string | null>(null);
 
   const handleUrlSubmit = async () => {
-    if (!url.trim()) {
-      setError('Please enter a URL.');
+    let cleanUrl = url.trim();
+    if (!cleanUrl) {
+      setError('Please enter a website URL.');
       return;
     }
+
+    // Auto prepend https:// if missing
+    if (!/^https?:\/\//i.test(cleanUrl)) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+
     setLoading(true);
+    onLoadingChange?.(true);
     setError(null);
+
     try {
       const res = await fetch('/api/parse-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: cleanUrl }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -36,22 +51,23 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
       }
       onContentLoaded(data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch article.');
+      setError(err instanceof Error ? err.message : 'Failed to fetch article. Please try direct text input or sample.');
     } finally {
       setLoading(false);
+      onLoadingChange?.(false);
     }
   };
 
   const handleTextSubmit = () => {
     if (!textInput.trim()) {
-      setError('Please enter some text.');
+      setError('Please paste or type some text first.');
       return;
     }
     setError(null);
     onContentLoaded({
-      title: 'Pasted Text',
+      title: 'Direct Text Input',
       textContent: textInput.trim(),
-      siteName: 'Direct Input',
+      siteName: 'Direct Paste',
     });
   };
 
@@ -63,7 +79,7 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
           role="tab"
           aria-selected={activeTab === 'url'}
           onClick={() => { setActiveTab('url'); setError(null); }}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
             backgroundColor: activeTab === 'url' ? theme.card : 'transparent',
             color: activeTab === 'url' ? theme.text : theme.secondaryText,
@@ -71,13 +87,13 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
           }}
         >
           <Link2 size={16} aria-hidden="true" />
-          Paste URL
+          Paste Web URL
         </button>
         <button
           role="tab"
           aria-selected={activeTab === 'text'}
           onClick={() => { setActiveTab('text'); setError(null); }}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
             backgroundColor: activeTab === 'text' ? theme.card : 'transparent',
             color: activeTab === 'text' ? theme.text : theme.secondaryText,
@@ -85,42 +101,63 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
           }}
         >
           <Type size={16} aria-hidden="true" />
-          Paste Text
+          Direct Text Input
         </button>
       </div>
 
       {/* URL Input */}
       {activeTab === 'url' && (
         <div role="tabpanel" className="space-y-3">
-          <div className="flex gap-2">
-            <input
-              type="url"
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder="https://example.com/article"
-              aria-label="Article URL"
-              className="flex-1 px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
-              onKeyDown={e => e.key === 'Enter' && handleUrlSubmit()}
-            />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                placeholder="e.g. en.wikipedia.org/wiki/Neurodiversity or news article"
+                aria-label="Article or webpage URL"
+                className="w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all pr-8"
+                style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
+                onKeyDown={e => e.key === 'Enter' && handleUrlSubmit()}
+              />
+              {url && (
+                <button
+                  type="button"
+                  onClick={() => setUrl('')}
+                  aria-label="Clear input"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full hover:opacity-75"
+                  style={{ color: theme.secondaryText }}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
             <button
               onClick={handleUrlSubmit}
               disabled={loading}
               aria-label="Extract article content"
-              className="px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="px-6 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm whitespace-nowrap"
               style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
             >
-              {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <FileText size={16} aria-hidden="true" />}
-              {loading ? 'Extracting...' : 'Extract'}
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+              ) : (
+                <FileText size={16} aria-hidden="true" />
+              )}
+              {loading ? 'Extracting Article...' : 'Extract & Clean'}
             </button>
           </div>
-          <button
-            onClick={onLoadSample}
-            className="text-sm font-medium transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: theme.accent }}
-          >
-            ✨ Try Sample Article
-          </button>
+          <div className="flex items-center justify-between text-xs">
+            <button
+              onClick={onLoadSample}
+              type="button"
+              className="font-medium transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center gap-1.5"
+              style={{ color: theme.accent }}
+            >
+              <span>✨</span> Try Sample Article (Reading & Neuroscience)
+            </button>
+            <span style={{ color: theme.secondaryText }}>Supports most news, blogs & docs</span>
+          </div>
         </div>
       )}
 
@@ -130,29 +167,47 @@ export default function InputSection({ onContentLoaded, theme, onLoadSample }: I
           <textarea
             value={textInput}
             onChange={e => setTextInput(e.target.value)}
-            placeholder="Paste your text content here..."
-            aria-label="Text content"
-            rows={6}
+            placeholder="Paste or type any article, study guide, work report, or text here..."
+            aria-label="Raw text content"
+            rows={5}
             className="w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y transition-all"
             style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
           />
-          <button
-            onClick={handleTextSubmit}
-            aria-label="Load pasted text into reader"
-            className="px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
-          >
-            <FileText size={16} aria-hidden="true" />
-            Load Text
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleTextSubmit}
+              aria-label="Load pasted text into reader"
+              className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
+            >
+              <FileText size={16} aria-hidden="true" />
+              Open in Reader
+            </button>
+            <button
+              onClick={onLoadSample}
+              type="button"
+              className="text-xs font-medium transition-colors hover:underline"
+              style={{ color: theme.accent }}
+            >
+              Or load sample article
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Error */}
+      {/* Error Banner */}
       {error && (
-        <div role="alert" className="mt-3 flex items-center gap-2 p-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
-          <AlertCircle size={16} aria-hidden="true" className="flex-shrink-0" />
-          {error}
+        <div
+          role="alert"
+          className="mt-4 flex items-start gap-2.5 p-3.5 rounded-xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+        >
+          <AlertCircle size={16} aria-hidden="true" className="flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold">{error}</p>
+            <p className="mt-1 text-[11px] opacity-80">
+              Note: Some sites use Cloudflare or paywalls. You can always copy the text from the page and use &ldquo;Direct Text Input&rdquo;.
+            </p>
+          </div>
         </div>
       )}
     </section>
