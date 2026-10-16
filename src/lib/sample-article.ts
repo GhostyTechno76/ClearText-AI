@@ -17,3 +17,37 @@ Research has shown that simple modifications to text presentation can significan
 
 The future of accessible reading technology is promising. AI-powered text simplification can make complex content accessible to a broader audience without losing essential information. Combined with customizable visual presentation and audio support, these tools are helping to democratize access to information for people of all reading abilities.`,
 };
+
+export const sampleArticlesList = [
+  {
+    id: 'science-reading',
+    title: 'The Science of Reading: How Our Brains Decode Text',
+    badge: '⚡ Science of Reading (3 min)',
+    siteName: 'Neuroscience Daily',
+    textContent: sampleArticle.textContent,
+  },
+  {
+    id: 'neurodiversity',
+    title: 'Neurodiversity & Cognitive Strengths in Modern Workspaces',
+    badge: '🧠 Neurodiversity & Cognition (2 min)',
+    siteName: 'Cognitive Frontiers',
+    textContent: `Neurodiversity describes the natural variations in how human brains process information, learn, and experience the world. Rather than viewing conditions like dyslexia, ADHD, autism, and dyspraxia as deficits to be corrected, the neurodiversity paradigm recognizes them as valuable cognitive variations with distinct strengths.
+
+For example, individuals with dyslexia frequently demonstrate exceptional spatial reasoning, creative problem-solving skills, and holistic interconnected thinking. Many pioneering architects, inventors, and entrepreneurs attribute their innovative perspectives directly to dyslexic thinking styles.
+
+Similarly, individuals with ADHD often exhibit remarkable hyperfocus on novel tasks, high energy, and divergent thinking that drives entrepreneurial breakthrough. When modern digital environments adapt to support varied sensory and cognitive profiles — through customizable typography, reduced clutter, and multimodal sensory interfaces — neurodivergent individuals flourish.
+
+Designing digital tools with neurodiversity at the center creates a universal benefit: when a layout is clearer for someone with ADHD or dyslexia, it becomes effortlessly readable and delightful for everyone.`,
+  },
+  {
+    id: 'bionic-vision',
+    title: 'Saccadic Eye Movement and Artificial Fixation in Reading',
+    badge: '🔬 Bionic Fixation & Flow (2 min)',
+    siteName: 'Visual Ergonomics Journal',
+    textContent: `When we read continuous prose, our eyes do not glide smoothly across lines of text. Instead, they execute rapid ballistic jumps called saccades, interspersed with brief stationary moments known as fixations. During each fixation, which typically lasts between 200 and 250 milliseconds, our foveal vision captures a window of approximately 7 to 9 characters.
+
+Traditional reading requires the visual system to constantly calibrate the optimal landing position for each subsequent saccade. For readers experiencing visual stress, convergence fatigue, or phonological processing delays, erratic saccades frequently result in regressive eye movements — jumping backward to reread previously decoded words.
+
+Artificial fixation systems, commonly known as Bionic Reading, strategically accentuate the initial 40 to 50 percent of each word with optical weight. This typographic anchor provides a high-contrast landing marker for the visual cortex, allowing the peripheral perceptual field to project word completion without requiring full-word saccadic stops. The net outcome is a measured reduction in cognitive friction and heightened reading momentum.`,
+  },
+];

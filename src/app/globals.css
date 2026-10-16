@@ -28,18 +28,26 @@
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-500 ring-2 ring-blue-400;
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900;
   }
 }
 
 @layer utilities {
   .bionic-bold {
     font-weight: 800 !important;
+    letter-spacing: -0.01em;
   }
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* CSS View Transitions for smooth theme switching without screen flash */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Custom accessible scrollbar */
@@ -50,16 +58,28 @@ html {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Print Styles */
 @media print {
-  header, aside, [role="toolbar"], [role="region"], footer, button {
+  header, aside, [role="toolbar"], [role="region"], footer, button, .pointer-events-auto {
     display: none !important;
   }
   body, main, article {

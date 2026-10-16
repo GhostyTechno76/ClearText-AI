@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, Square, Gauge, SkipForward, SkipBack, Volume2 } from 'lucide-react';
+import { Play, Pause, Square, Gauge, SkipForward, SkipBack, Volume2, Sparkles } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { splitIntoParagraphs } from '@/lib/bionic';
 
@@ -124,7 +124,7 @@ export default function AudioPlayer({
     speakParagraph(prevIdx);
   }, [speakParagraph]);
 
-  // Handle external selection change (e.g. user clicked a paragraph directly)
+  // Handle external selection change (e.g. user clicked a paragraph directly in canvas)
   useEffect(() => {
     if (
       activeParagraphIndex >= 0 &&
@@ -147,113 +147,168 @@ export default function AudioPlayer({
   if (!supported) {
     return (
       <div
-        className="p-3 rounded-xl border text-xs"
+        className="p-3.5 rounded-2xl border text-xs shadow-sm"
         style={{ backgroundColor: theme.card, borderColor: theme.border, color: theme.secondaryText }}
       >
-        Speech synthesis is not supported on this browser.
+        Browser speech synthesis is not supported in this environment.
       </div>
     );
   }
 
   const totalParagraphs = paragraphsRef.current.length;
   const currentNum = currentIndexRef.current >= 0 ? currentIndexRef.current + 1 : 0;
+  const progressPercent = totalParagraphs > 0 ? (currentNum / totalParagraphs) * 100 : 0;
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 rounded-xl border shadow-sm transition-all"
-      style={{ backgroundColor: theme.card, borderColor: theme.border }}
+      className="p-3.5 sm:p-4 rounded-3xl border shadow-xl backdrop-blur-xl transition-all duration-300"
+      style={{
+        backgroundColor: theme.card,
+        borderColor: theme.border,
+        boxShadow: `0 8px 30px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
+      }}
       role="region"
-      aria-label="Audio read-aloud player"
+      aria-label="Ambient audio read-aloud player"
     >
-      {/* Play / Pause */}
-      <button
-        onClick={isPlaying ? pause : play}
-        aria-label={isPlaying ? 'Pause reading aloud' : 'Start reading aloud'}
-        className="p-2.5 rounded-full transition-all hover:opacity-90 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center justify-center"
-        style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
-        title={isPlaying ? 'Pause (Space)' : 'Play'}
-      >
-        {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-      </button>
-
-      {/* Stop */}
-      <button
-        onClick={stop}
-        disabled={!isPlaying && !isPaused && currentIndexRef.current === -1}
-        aria-label="Stop reading"
-        className="p-2 rounded-full border transition-all hover:opacity-80 disabled:opacity-30 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2"
-        style={{ borderColor: theme.border, color: theme.text }}
-        title="Stop"
-      >
-        <Square size={14} />
-      </button>
-
-      {/* Navigation: Prev / Next */}
-      <div className="flex items-center gap-1">
-        <button
-          onClick={prevParagraph}
-          disabled={!isPlaying && !isPaused}
-          aria-label="Previous paragraph"
-          className="p-1.5 rounded-lg border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ borderColor: theme.border, color: theme.text }}
-          title="Previous paragraph"
-        >
-          <SkipBack size={13} />
-        </button>
-        <button
-          onClick={nextParagraph}
-          disabled={!isPlaying && !isPaused}
-          aria-label="Next paragraph"
-          className="p-1.5 rounded-lg border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ borderColor: theme.border, color: theme.text }}
-          title="Next paragraph"
-        >
-          <SkipForward size={13} />
-        </button>
-      </div>
-
-      {/* Status & Paragraph Indicator */}
-      <div className="flex items-center gap-1.5 text-xs font-medium px-2" style={{ color: theme.text }}>
-        <Volume2 size={14} style={{ color: theme.accent }} aria-hidden="true" />
-        <span>
-          {isPlaying
-            ? `Reading section ${currentNum} of ${totalParagraphs}`
-            : isPaused
-            ? `Paused at section ${currentNum}`
-            : 'Audio Reader Ready'}
-        </span>
-      </div>
-
-      {/* Speed Controls */}
-      <div className="flex items-center gap-1 ml-auto">
-        <Gauge size={13} style={{ color: theme.secondaryText }} aria-hidden="true" />
-        <span className="text-[11px] font-semibold hidden sm:inline" style={{ color: theme.secondaryText }}>
-          Speed:
-        </span>
-        {rates.map(r => (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Playback Transport Buttons */}
+        <div className="flex items-center gap-2">
+          {/* Main Play/Pause Button */}
           <button
-            key={r}
-            onClick={() => {
-              setRate(r);
-              rateRef.current = r;
-              if (isPlaying) {
-                // Restart current paragraph with new speed smoothly
-                speakParagraph(currentIndexRef.current >= 0 ? currentIndexRef.current : 0);
-              }
-            }}
-            aria-label={`Speed ${r}x`}
-            aria-pressed={rate === r}
-            className="px-2 py-1 rounded text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
+            onClick={isPlaying ? pause : play}
+            aria-label={isPlaying ? 'Pause reading aloud' : 'Start reading aloud'}
+            className="w-10 h-10 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-md flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
-              backgroundColor: rate === r ? theme.accent : 'transparent',
-              color: rate === r ? theme.accentText : theme.secondaryText,
-              borderColor: rate === r ? theme.accent : 'transparent',
+              backgroundColor: theme.buttonBg,
+              color: theme.buttonText,
+              boxShadow: `0 4px 14px ${theme.glowColor || 'rgba(0,0,0,0.15)'}`,
             }}
+            title={isPlaying ? 'Pause (Space)' : 'Play reading aloud'}
           >
-            {r}x
+            {isPlaying ? <Pause size={17} /> : <Play size={17} className="ml-0.5" />}
           </button>
-        ))}
+
+          {/* Stop Button */}
+          <button
+            onClick={stop}
+            disabled={!isPlaying && !isPaused && currentIndexRef.current === -1}
+            aria-label="Stop reading"
+            className="w-9 h-9 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ borderColor: theme.border, color: theme.text }}
+            title="Stop reading"
+          >
+            <Square size={13} />
+          </button>
+
+          {/* Prev / Next Track */}
+          <div className="flex items-center gap-1 border-l pl-2 ml-1" style={{ borderColor: theme.border }}>
+            <button
+              onClick={prevParagraph}
+              disabled={!isPlaying && !isPaused}
+              aria-label="Previous section"
+              className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ borderColor: theme.border, color: theme.text }}
+              title="Previous section"
+            >
+              <SkipBack size={13} />
+            </button>
+            <button
+              onClick={nextParagraph}
+              disabled={!isPlaying && !isPaused}
+              aria-label="Next section"
+              className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ borderColor: theme.border, color: theme.text }}
+              title="Next section"
+            >
+              <SkipForward size={13} />
+            </button>
+          </div>
+        </div>
+
+        {/* Live Audio Status & Section Counter */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold" style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}>
+          <div className="flex items-center gap-1">
+            <Volume2 size={13} style={{ color: theme.accent }} />
+            {isPlaying && (
+              <span className="flex items-end gap-0.5 h-3">
+                <span className="w-0.5 h-3 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '0ms' }} />
+                <span className="w-0.5 h-2 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '150ms' }} />
+                <span className="w-0.5 h-3 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '300ms' }} />
+              </span>
+            )}
+          </div>
+          <span style={{ color: theme.text }}>
+            {isPlaying
+              ? `Reading Section ${currentNum} of ${totalParagraphs}`
+              : isPaused
+              ? `Paused at Section ${currentNum}`
+              : 'Ambient Read-Aloud Ready'}
+          </span>
+        </div>
+
+        {/* Tactile Segmented Speed Selector */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl border" style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}>
+          <Gauge size={13} className="ml-1 opacity-70" style={{ color: theme.secondaryText }} aria-hidden="true" />
+          <div className="flex items-center gap-1">
+            {rates.map((r) => {
+              const isSelected = rate === r;
+              return (
+                <button
+                  key={r}
+                  onClick={() => {
+                    setRate(r);
+                    rateRef.current = r;
+                    if (isPlaying) {
+                      speakParagraph(currentIndexRef.current >= 0 ? currentIndexRef.current : 0);
+                    }
+                  }}
+                  aria-label={`Speech rate ${r}x`}
+                  aria-pressed={isSelected}
+                  className="px-2.5 py-1 rounded-xl text-xs font-bold transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{
+                    backgroundColor: isSelected ? theme.accent : 'transparent',
+                    color: isSelected ? theme.accentText : theme.secondaryText,
+                    boxShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                  }}
+                >
+                  {r}x
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
+
+      {/* Interactive Paragraph Scrubber Bar */}
+      {totalParagraphs > 0 && (
+        <div className="mt-3 pt-2 border-t flex items-center gap-3" style={{ borderColor: theme.border }}>
+          <span className="text-[10px] font-mono opacity-70" style={{ color: theme.secondaryText }}>
+            Progress
+          </span>
+          <div
+            className="flex-1 h-2 rounded-full cursor-pointer relative overflow-hidden transition-all bg-black/10 dark:bg-white/10"
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const clickX = e.clientX - rect.left;
+              const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+              const targetIndex = Math.floor(ratio * totalParagraphs);
+              speakParagraph(targetIndex);
+            }}
+            title="Click scrubber to jump directly to any paragraph"
+          >
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progressPercent}%`,
+                backgroundColor: theme.accent,
+              }}
+            />
+          </div>
+          <span className="text-[10px] font-mono font-bold" style={{ color: theme.secondaryText }}>
+            {Math.round(progressPercent)}%
+          </span>
+        </div>
+      )}
     </div>
   );
 }

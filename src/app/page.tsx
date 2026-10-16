@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Sparkles,
   ListChecks,
   Loader2,
   BookOpenCheck,
   Zap,
-  Shield,
-  Eye,
-  Volume2,
   ArrowLeft,
   RefreshCw,
+  Columns,
+  Eye,
+  Sliders,
 } from 'lucide-react';
 import InputSection from '@/components/InputSection';
 import ReaderCanvas from '@/components/ReaderCanvas';
 import Toolbar from '@/components/Toolbar';
 import AudioPlayer from '@/components/AudioPlayer';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import SplineHeroPrism from '@/components/SplineHeroPrism';
+import InteractiveFeatureGrid from '@/components/InteractiveFeatureGrid';
 import { themes, defaultSettings, ReaderSettings } from '@/lib/themes';
 import { sampleArticle } from '@/lib/sample-article';
 
@@ -36,11 +38,24 @@ export default function Home() {
   const [aiResult, setAiResult] = useState<string | null>(null);
   const [aiMode, setAiMode] = useState<'simplify' | 'summarize' | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [viewMode, setViewMode] = useState<'current' | 'original' | 'split'>('current');
   const [activeParagraphIndex, setActiveParagraphIndex] = useState<number>(-1);
   const [showNewInput, setShowNewInput] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const theme = themes[settings.theme];
+
+  // Global keyboard shortcut: Ctrl+\ or Cmd+\ to toggle collapsible settings toolbar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === '\\') {
+        e.preventDefault();
+        setIsSidebarOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Reset to home page when clicking the top-left logo
   const handleResetHome = useCallback(() => {
@@ -52,7 +67,7 @@ export default function Home() {
     setAiResult(null);
     setAiMode(null);
     setAiError(null);
-    setShowOriginal(false);
+    setViewMode('current');
     setActiveParagraphIndex(-1);
     setLoading(false);
     setShowNewInput(false);
@@ -67,7 +82,7 @@ export default function Home() {
     setAiResult(null);
     setAiMode(null);
     setAiError(null);
-    setShowOriginal(false);
+    setViewMode('current');
     setActiveParagraphIndex(-1);
     setShowNewInput(false);
   }, []);
@@ -97,7 +112,7 @@ export default function Home() {
         if (!res.ok) throw new Error(data.error || 'AI processing failed.');
         setAiResult(data.result);
         setDisplayText(data.result);
-        setShowOriginal(false);
+        setViewMode('current');
       } catch (err: unknown) {
         setAiError(err instanceof Error ? err.message : 'AI processing failed.');
       } finally {
@@ -107,76 +122,96 @@ export default function Home() {
     [article]
   );
 
-  const toggleOriginal = useCallback(() => {
-    if (!article) return;
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setActiveParagraphIndex(-1);
-    if (showOriginal) {
-      setDisplayText(aiResult || article.textContent);
-      setShowOriginal(false);
-    } else {
-      setDisplayText(article.textContent);
-      setShowOriginal(true);
-    }
-  }, [article, aiResult, showOriginal]);
-
   return (
     <div
-      className="min-h-screen transition-colors duration-300 flex flex-col"
+      className="min-h-screen transition-colors duration-300 flex flex-col font-sans"
       style={{ backgroundColor: theme.bg, color: theme.text }}
     >
       {/* Header */}
-      <header className="border-b sticky top-0 z-40 backdrop-blur-md bg-opacity-95" style={{ borderColor: theme.border, backgroundColor: theme.bg }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <header
+        className="border-b sticky top-0 z-40 backdrop-blur-xl transition-colors duration-300"
+        style={{
+          borderColor: theme.border,
+          backgroundColor: theme.glassBackdrop || theme.bg,
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo & Brand (Clickable to return Home) */}
           <button
             onClick={handleResetHome}
-            className="flex items-center gap-3 text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 rounded-xl p-1 -m-1 transition-transform hover:scale-[1.01]"
-            aria-label="ClearText AI - Click to go back to Home"
+            className="flex items-center gap-3 text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 rounded-2xl p-1.5 -m-1.5 transition-transform hover:scale-[1.01]"
+            aria-label="ClearText AI - Click to return Home"
             title="Click to go back to Home"
           >
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shadow-sm transition-transform group-hover:scale-105"
-              style={{ backgroundColor: theme.accent, color: theme.accentText }}
+              className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-md transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
+              style={{
+                backgroundColor: theme.accent,
+                color: theme.accentText,
+                boxShadow: `0 4px 14px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
+              }}
             >
               CT
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <span className="text-base font-black tracking-tight" style={{ color: theme.text }}>
                   ClearText<span style={{ color: theme.accent }}>.ai</span>
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full border opacity-75" style={{ borderColor: theme.border }}>
+                <span
+                  className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full border shadow-sm uppercase tracking-wider"
+                  style={{
+                    borderColor: theme.border,
+                    backgroundColor: theme.highlightBg,
+                    color: theme.accent,
+                  }}
+                >
+                  <Sparkles size={10} aria-hidden="true" />
                   WCAG AAA
                 </span>
               </div>
-              <p className="text-[10px] font-semibold tracking-wider uppercase" style={{ color: theme.secondaryText }}>
-                Accessible Reader &amp; Simplifier
+              <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: theme.secondaryText }}>
+                Living Canvas &bull; Tactile Studio
               </p>
             </div>
           </button>
 
           {/* Right Header Navigation / Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            {article && (
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                style={{
+                  borderColor: theme.border,
+                  backgroundColor: isSidebarOpen ? theme.highlightBg : theme.card,
+                  color: isSidebarOpen ? theme.accent : theme.text,
+                }}
+                title="Toggle Display Settings Panel (Ctrl+\)"
+              >
+                <Sliders size={14} />
+                <span className="hidden sm:inline">Settings</span>
+              </button>
+            )}
+
             {article && (
               <button
                 onClick={handleResetHome}
-                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ borderColor: theme.border, color: theme.text }}
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
                 title="Go back to hero input"
               >
                 <ArrowLeft size={13} />
                 <span className="hidden sm:inline">New Article</span>
               </button>
             )}
+
             <a
               href="https://github.com/GhostyTechno76/ClearText-AI"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ borderColor: theme.border, color: theme.secondaryText }}
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
             >
               GitHub
             </a>
@@ -186,91 +221,81 @@ export default function Home() {
 
       {/* Hero Section - Shown when no article is loaded */}
       {!article && !loading && (
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-12 text-center flex-1">
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-6 border shadow-sm"
-            style={{ backgroundColor: theme.highlightBg, borderColor: theme.border, color: theme.accent }}
-          >
-            <Zap size={13} aria-hidden="true" />
-            Empowering Neurodivergent &amp; Dyslexic Readers Everywhere
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 flex-1">
+          {/* Responsive 2-Column Split Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column (Approx 58% width): Primary Conversion Zone */}
+            <div className="lg:col-span-7 flex flex-col text-left items-start order-1 w-full">
+              {/* Top Accessibility Tagline */}
+              <div
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-4 border shadow-sm transition-all"
+                style={{
+                  backgroundColor: theme.highlightBg,
+                  borderColor: theme.border,
+                  color: theme.accent,
+                }}
+              >
+                <Zap size={13} aria-hidden="true" className="animate-pulse" />
+                Empowering Neurodivergent &amp; Dyslexic Readers Everywhere
+              </div>
+
+              {/* Master Headline */}
+              <h1
+                className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.12] mb-4"
+                style={{ color: theme.text }}
+              >
+                Read anything with{' '}
+                <span
+                  className="underline decoration-wavy decoration-2 transition-colors duration-300"
+                  style={{ color: theme.accent, textDecorationColor: theme.accent }}
+                >
+                  crystal clarity
+                </span>
+                .
+              </h1>
+
+              {/* Subheadline Paragraph */}
+              <p
+                className="text-base sm:text-lg mb-6 leading-relaxed font-normal max-w-2xl"
+                style={{ color: theme.secondaryText }}
+              >
+                Transform dense articles, paywall-free web pages, and raw text into a clean, distraction-free sanctuary with instant 5th-grade AI simplification, bionic eye anchors, and live synchronized speech.
+              </p>
+
+              {/* Unified Glassmorphic Input Capsule - Immediately Visible Above the Fold */}
+              <div className="w-full">
+                <InputSection
+                  onContentLoaded={handleContentLoaded}
+                  theme={theme}
+                  onLoadSample={loadSample}
+                  onLoadingChange={setLoading}
+                />
+              </div>
+            </div>
+
+            {/* Right Column (Approx 42% width): Seamless Floating 3D Canvas */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center order-2 w-full">
+              <SplineHeroPrism theme={theme} />
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] mb-5" style={{ color: theme.text }}>
-            Read anything with{' '}
-            <span
-              className="underline decoration-wavy decoration-2"
-              style={{ color: theme.accent, textDecorationColor: theme.accent }}
-            >
-              crystal clarity
-            </span>
-            .
-          </h1>
-
-          <p className="text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-normal" style={{ color: theme.secondaryText }}>
-            Transform dense articles, paywall-free web pages, and raw text into a clean, distraction-free, dyslexia-friendly format with instant 5th-grade AI simplification and audio read-aloud.
-          </p>
-
-          <InputSection
-            onContentLoaded={handleContentLoaded}
-            theme={theme}
-            onLoadSample={loadSample}
-            onLoadingChange={setLoading}
-          />
-
-          {/* Value Proposition Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-16 text-left">
-            {[
-              {
-                icon: <Eye size={20} />,
-                title: 'Bionic Reading',
-                desc: 'Guides saccadic eye movements by bolding the initial 40–50% of every word.',
-              },
-              {
-                icon: <Sparkles size={20} />,
-                title: 'AI Simplification',
-                desc: 'Translates academic & complex prose into clear 5th-grade language without lost facts.',
-              },
-              {
-                icon: <Shield size={20} />,
-                title: 'Dyslexia Typography',
-                desc: 'OpenDyslexic font support, weighted bottoms, custom leading & letter tracking.',
-              },
-              {
-                icon: <Volume2 size={20} />,
-                title: 'Synchronized Speech',
-                desc: 'Zero-latency browser text-to-speech with live paragraph-by-paragraph tracking.',
-              },
-            ].map(f => (
-              <div
-                key={f.title}
-                className="p-5 rounded-2xl border transition-all hover:scale-[1.02] shadow-sm"
-                style={{ backgroundColor: theme.card, borderColor: theme.border }}
-              >
-                <div className="mb-3.5 inline-block p-2 rounded-xl" style={{ backgroundColor: theme.highlightBg, color: theme.accent }}>
-                  {f.icon}
-                </div>
-                <h3 className="text-sm font-bold mb-1.5" style={{ color: theme.text }}>
-                  {f.title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: theme.secondaryText }}>
-                  {f.desc}
-                </p>
-              </div>
-            ))}
+          {/* Interactive 4-Card Feature Playgrounds (Beneath Split Hero) */}
+          <div className="mt-14 sm:mt-20">
+            <InteractiveFeatureGrid theme={theme} />
           </div>
         </section>
       )}
 
-      {/* Loading Skeleton */}
+      {/* Loading Skeleton View */}
       {loading && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 flex-1">
           <div className="text-center mb-8">
-            <Loader2 className="animate-spin mx-auto mb-3" size={32} style={{ color: theme.accent }} />
-            <h2 className="text-lg font-bold" style={{ color: theme.text }}>
-              Extracting &amp; Formatting Content...
+            <Loader2 className="animate-spin mx-auto mb-3" size={36} style={{ color: theme.accent }} />
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: theme.text }}>
+              Refracting &amp; Clarifying Content...
             </h2>
-            <p className="text-xs" style={{ color: theme.secondaryText }}>
-              Removing clutter, ads, navigation bars, and applying accessibility styles.
+            <p className="text-xs sm:text-sm mt-1" style={{ color: theme.secondaryText }}>
+              Stripping ads, clutter, and distractions while assembling your tactile reading canvas.
             </p>
           </div>
           <LoadingSkeleton theme={theme} />
@@ -279,29 +304,35 @@ export default function Home() {
 
       {/* Reader Layout - Shown when an article is loaded */}
       {article && !loading && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1">
-          {/* Quick Bar to switch / load another article */}
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border text-xs" style={{ backgroundColor: theme.card, borderColor: theme.border }}>
-            <div className="flex items-center gap-2">
-              <span className="font-bold uppercase tracking-wider text-[10px]" style={{ color: theme.secondaryText }}>
-                Currently Reading:
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full">
+          {/* Quick Context Bar */}
+          <div
+            className="mb-6 flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border text-xs shadow-sm backdrop-blur-xl"
+            style={{ backgroundColor: theme.card, borderColor: theme.border }}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="font-extrabold uppercase tracking-widest text-[10px]" style={{ color: theme.secondaryText }}>
+                Reading Sanctuary:
               </span>
-              <span className="font-semibold truncate max-w-xs sm:max-w-md" style={{ color: theme.text }}>
+              <span className="font-bold truncate max-w-xs sm:max-w-md text-sm" style={{ color: theme.text }}>
                 {article.title}
               </span>
             </div>
             <button
               onClick={() => setShowNewInput(!showNewInput)}
-              className="flex items-center gap-1.5 font-bold hover:underline"
-              style={{ color: theme.accent }}
+              className="flex items-center gap-1.5 font-bold hover:underline py-1 px-2.5 rounded-lg border transition-all"
+              style={{ color: theme.accent, borderColor: theme.border, backgroundColor: theme.inputBg }}
             >
-              <RefreshCw size={12} />
-              {showNewInput ? 'Hide Input Bar' : 'Load Another URL / Text'}
+              <RefreshCw size={12} className={showNewInput ? 'rotate-180 transition-transform' : ''} />
+              <span>{showNewInput ? 'Hide Input Drawer' : 'Load Another URL / Text'}</span>
             </button>
           </div>
 
           {showNewInput && (
-            <div className="mb-8 p-6 rounded-2xl border shadow-md" style={{ backgroundColor: theme.card, borderColor: theme.border }}>
+            <div
+              className="mb-8 p-6 rounded-3xl border shadow-xl backdrop-blur-xl"
+              style={{ backgroundColor: theme.card, borderColor: theme.border }}
+            >
               <InputSection
                 onContentLoaded={handleContentLoaded}
                 theme={theme}
@@ -311,64 +342,131 @@ export default function Home() {
             </div>
           )}
 
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar Customization Toolbar */}
-            <aside className="lg:w-72 flex-shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:self-start">
+          <div className="flex flex-col lg:flex-row gap-6 relative">
+            {/* Collapsible Floating Dock Toolbar */}
+            {isSidebarOpen && (
+              <aside className="lg:w-80 flex-shrink-0 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:self-start transition-all duration-300">
+                <Toolbar
+                  settings={settings}
+                  onSettingsChange={setSettings}
+                  theme={theme}
+                  isOpen={isSidebarOpen}
+                  onToggleOpen={() => setIsSidebarOpen(false)}
+                />
+              </aside>
+            )}
+
+            {!isSidebarOpen && (
               <Toolbar
                 settings={settings}
                 onSettingsChange={setSettings}
                 theme={theme}
+                isOpen={false}
+                onToggleOpen={() => setIsSidebarOpen(true)}
               />
-            </aside>
+            )}
 
-            {/* Main Reading & AI Column */}
-            <main className="flex-1 min-w-0 space-y-4">
-              {/* AI & Quick Action Bar */}
+            {/* Main Reading & AI Workspace */}
+            <main className="flex-1 min-w-0 space-y-5">
+              {/* AI Transformation Action Bar */}
               <div
-                className="flex flex-wrap items-center gap-2.5 p-3.5 rounded-2xl border shadow-sm"
+                className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-3xl border shadow-md backdrop-blur-xl"
                 style={{ backgroundColor: theme.card, borderColor: theme.border }}
                 role="toolbar"
                 aria-label="AI reading tools"
               >
-                <button
-                  onClick={() => handleAI('simplify')}
-                  disabled={aiLoading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
-                  style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
-                  title="Simplify vocabulary and sentence complexity to 5th-grade level"
-                >
-                  {aiLoading && aiMode === 'simplify' ? (
-                    <Loader2 size={15} className="animate-spin" aria-hidden="true" />
-                  ) : (
-                    <Sparkles size={15} aria-hidden="true" />
-                  )}
-                  Simplify (5th-Grade)
-                </button>
-
-                <button
-                  onClick={() => handleAI('summarize')}
-                  disabled={aiLoading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{ borderColor: theme.border, color: theme.text }}
-                  title="Extract essential takeaways into clean bullet points"
-                >
-                  {aiLoading && aiMode === 'summarize' ? (
-                    <Loader2 size={15} className="animate-spin" aria-hidden="true" />
-                  ) : (
-                    <ListChecks size={15} aria-hidden="true" />
-                  )}
-                  Key Bullets
-                </button>
-
-                {aiResult && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Simplify 5th-Grade Button */}
                   <button
-                    onClick={toggleOriginal}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all hover:opacity-80 ml-auto focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ borderColor: theme.border, color: theme.secondaryText }}
+                    onClick={() => handleAI('simplify')}
+                    disabled={aiLoading}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md relative overflow-hidden"
+                    style={{
+                      backgroundColor: theme.buttonBg,
+                      color: theme.buttonText,
+                      boxShadow: `0 4px 12px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
+                    }}
+                    title="Translate vocabulary and sentence complexity to 5th-grade level"
                   >
-                    <BookOpenCheck size={14} aria-hidden="true" />
-                    {showOriginal ? 'View AI Version' : 'View Original Text'}
+                    {aiLoading && aiMode === 'simplify' ? (
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Sparkles size={16} aria-hidden="true" />
+                    )}
+                    <span>Simplify (5th-Grade)</span>
                   </button>
+
+                  {/* Key Bullets Button */}
+                  <button
+                    onClick={() => handleAI('summarize')}
+                    disabled={aiLoading}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold border transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                    style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
+                    title="Extract essential takeaways into clean, styled callout cards"
+                  >
+                    {aiLoading && aiMode === 'summarize' ? (
+                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    ) : (
+                      <ListChecks size={16} aria-hidden="true" />
+                    )}
+                    <span>Key Bullets</span>
+                  </button>
+                </div>
+
+                {/* Comparative View Switcher (Available when AI result is present) */}
+                {aiResult && (
+                  <div
+                    className="flex items-center gap-1 p-1 rounded-2xl border"
+                    style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
+                  >
+                    <button
+                      onClick={() => {
+                        setViewMode('current');
+                        setDisplayText(aiResult);
+                      }}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      style={{
+                        backgroundColor: viewMode === 'current' ? theme.card : 'transparent',
+                        color: viewMode === 'current' ? theme.accent : theme.secondaryText,
+                        boxShadow: viewMode === 'current' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                      }}
+                      title="View AI version"
+                    >
+                      <Sparkles size={12} className="inline mr-1" />
+                      AI Text
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setViewMode('original');
+                        setDisplayText(article.textContent);
+                      }}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      style={{
+                        backgroundColor: viewMode === 'original' ? theme.card : 'transparent',
+                        color: viewMode === 'original' ? theme.accent : theme.secondaryText,
+                        boxShadow: viewMode === 'original' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                      }}
+                      title="View original unedited text"
+                    >
+                      <BookOpenCheck size={12} className="inline mr-1" />
+                      Original
+                    </button>
+
+                    <button
+                      onClick={() => setViewMode('split')}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all hidden sm:inline-flex items-center"
+                      style={{
+                        backgroundColor: viewMode === 'split' ? theme.card : 'transparent',
+                        color: viewMode === 'split' ? theme.accent : theme.secondaryText,
+                        boxShadow: viewMode === 'split' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                      }}
+                      title="Compare Original vs Simplified side-by-side"
+                    >
+                      <Columns size={12} className="inline mr-1" />
+                      Split View
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -376,13 +474,13 @@ export default function Home() {
               {aiError && (
                 <div
                   role="alert"
-                  className="p-3 rounded-xl text-xs bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                  className="p-4 rounded-2xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-sm"
                 >
                   {aiError}
                 </div>
               )}
 
-              {/* Synchronized Audio Player */}
+              {/* Ambient Synchronized Audio Media Bar */}
               <AudioPlayer
                 text={displayText}
                 theme={theme}
@@ -390,34 +488,74 @@ export default function Home() {
                 onActiveParagraphChange={setActiveParagraphIndex}
               />
 
-              {/* Reader Canvas */}
-              <ReaderCanvas
-                title={article.title}
-                siteName={article.siteName}
-                textContent={displayText}
-                settings={settings}
-                theme={theme}
-                activeParagraphIndex={activeParagraphIndex}
-                onParagraphClick={idx => setActiveParagraphIndex(idx)}
-              />
+              {/* Reader Canvas / Split View */}
+              {viewMode === 'split' && aiResult ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2 text-xs font-bold tracking-wider uppercase opacity-75" style={{ color: theme.secondaryText }}>
+                      <BookOpenCheck size={13} />
+                      <span>Original Text</span>
+                    </div>
+                    <ReaderCanvas
+                      title={article.title}
+                      siteName={article.siteName}
+                      textContent={article.textContent}
+                      settings={settings}
+                      theme={theme}
+                      activeParagraphIndex={activeParagraphIndex}
+                      onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
+                      isAudioPlaying={false}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2 text-xs font-bold tracking-wider uppercase" style={{ color: theme.accent }}>
+                      <Sparkles size={13} />
+                      <span>AI Simplified (5th-Grade)</span>
+                    </div>
+                    <ReaderCanvas
+                      title="AI Simplified Reading"
+                      siteName="ClearText AI Lens"
+                      textContent={aiResult}
+                      settings={settings}
+                      theme={theme}
+                      activeParagraphIndex={activeParagraphIndex}
+                      onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
+                      isAudioPlaying={activeParagraphIndex >= 0}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <ReaderCanvas
+                  title={article.title}
+                  siteName={article.siteName}
+                  textContent={displayText}
+                  settings={settings}
+                  theme={theme}
+                  activeParagraphIndex={activeParagraphIndex}
+                  onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
+                  isAudioPlaying={activeParagraphIndex >= 0}
+                />
+              )}
             </main>
           </div>
         </div>
       )}
 
       {/* Accessible Footer */}
-      <footer className="border-t mt-auto py-6" style={{ borderColor: theme.border }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <footer className="border-t mt-auto py-8 transition-colors duration-300" style={{ borderColor: theme.border }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <p style={{ color: theme.secondaryText }}>
-            &copy; 2026 ClearText AI — Built for neurodivergent and accessible web reading.
+            &copy; 2026 ClearText AI &bull; Thoughtful sensory reading sanctuary for neurodivergent minds.
           </p>
-          <div className="flex items-center gap-4 font-medium" style={{ color: theme.secondaryText }}>
+          <div className="flex items-center gap-4 font-semibold" style={{ color: theme.secondaryText }}>
             <span>WCAG 2.1 AAA</span>
-            <span>&bull;</span>
+            <span className="opacity-40">&bull;</span>
             <span>OpenDyslexic</span>
-            <span>&bull;</span>
+            <span className="opacity-40">&bull;</span>
+            <span>Spline 3D</span>
+            <span className="opacity-40">&bull;</span>
             <span>Web Speech API</span>
-            <span>&bull;</span>
+            <span className="opacity-40">&bull;</span>
             <span>Built by SKD</span>
           </div>
         </div>
