@@ -105,11 +105,10 @@ export default function ReaderCanvas({
     <article
       ref={containerRef}
       onMouseUp={handleTextSelection}
-      className="relative rounded-3xl border p-6 sm:p-12 shadow-xl backdrop-blur-xl transition-all duration-300"
+      className="relative rounded-2xl border p-6 sm:p-10 shadow-sm backdrop-blur-xl transition-all duration-200"
       style={{
         backgroundColor: theme.card,
         borderColor: theme.border,
-        boxShadow: `0 16px 40px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
       }}
       aria-label="Reader view"
     >
@@ -148,7 +147,7 @@ export default function ReaderCanvas({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[36px]"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
               title="Copy text to clipboard"
             >
@@ -157,7 +156,7 @@ export default function ReaderCanvas({
             </button>
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[36px]"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
               title="Print or save as PDF"
             >
@@ -233,7 +232,7 @@ export default function ReaderCanvas({
                 key={idx}
                 ref={isActive ? activeParagraphRef : null}
                 onClick={() => onParagraphClick?.(idx)}
-                className={`p-4 rounded-2xl border transition-colors duration-150 cursor-pointer shadow-sm group ${
+                className={`p-4 rounded-xl border transition-colors duration-150 cursor-pointer shadow-sm group ${
                   isActive ? 'ring-2 ring-offset-2' : 'hover:border-opacity-80'
                 }`}
                 style={{
@@ -252,13 +251,14 @@ export default function ReaderCanvas({
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className="p-1.5 rounded-xl flex-shrink-0 mt-0.5 shadow-sm"
+                    className="p-1.5 rounded-lg flex-shrink-0 mt-0.5 shadow-sm"
                     style={{ backgroundColor: theme.card, color: theme.accent }}
                   >
                     <BookOpen size={14} />
                   </div>
                   <div
-                    className="flex-1 leading-relaxed font-medium"
+                    className="flex-1 font-medium"
+                    style={{ lineHeight: settings.lineHeight }}
                     dangerouslySetInnerHTML={{ __html: paragraphHtml }}
                   />
                 </div>
@@ -271,7 +271,7 @@ export default function ReaderCanvas({
               key={idx}
               ref={isActive ? activeParagraphRef : null}
               onClick={() => onParagraphClick?.(idx)}
-              className={`group relative rounded-2xl transition-colors duration-150 cursor-pointer p-4 -mx-4 ${
+              className={`group relative rounded-xl transition-colors duration-150 cursor-pointer p-4 -mx-4 ${
                 isActive
                   ? 'border-l-4 shadow-sm'
                   : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02] border-l-4 border-transparent'
@@ -299,7 +299,8 @@ export default function ReaderCanvas({
               )}
 
               <div
-                className="leading-relaxed transition-all"
+                className="transition-all"
+                style={{ lineHeight: settings.lineHeight }}
                 dangerouslySetInnerHTML={{ __html: paragraphHtml }}
               />
             </div>

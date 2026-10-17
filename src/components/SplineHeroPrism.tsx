@@ -64,14 +64,14 @@ export default function SplineHeroPrism({ theme }: SplineHeroProps) {
           <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/25 via-indigo-400/20 to-slate-400/20 blur-2xl" />
             <div
-              className="relative w-28 h-28 rounded-full backdrop-blur-xl border p-4 shadow-xl flex items-center justify-center transition-all"
+              className="relative w-28 h-28 rounded-full backdrop-blur-xl border p-4 shadow-md flex items-center justify-center transition-all"
               style={{
                 backgroundColor: theme.card,
                 borderColor: theme.border,
               }}
             >
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center shadow-inner"
+                className="w-16 h-16 rounded-full flex items-center justify-center shadow-sm"
                 style={{ backgroundColor: theme.highlightBg }}
               >
                 <Eye size={28} style={{ color: theme.accent }} />

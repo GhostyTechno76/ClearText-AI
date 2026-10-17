@@ -65,7 +65,6 @@ export default function Toolbar({
           backgroundColor: theme.card,
           borderColor: theme.border,
           color: theme.text,
-          boxShadow: `0 8px 30px ${theme.glowColor || 'rgba(0,0,0,0.15)'}`,
         }}
         aria-label="Open Display Settings (Ctrl+\)"
         title="Open Display Settings (Ctrl+\)"
@@ -81,11 +80,10 @@ export default function Toolbar({
 
   return (
     <div
-      className="rounded-3xl border p-5 space-y-6 shadow-xl backdrop-blur-xl transition-all duration-300 relative"
+      className="rounded-2xl border p-5 space-y-5 shadow-sm backdrop-blur-xl transition-all duration-200 relative"
       style={{
         backgroundColor: theme.card,
         borderColor: theme.border,
-        boxShadow: `0 10px 30px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
       }}
       role="toolbar"
       aria-label="Reader customization controls"
@@ -133,12 +131,12 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontFamily: 'sans' })}
             aria-pressed={settings.fontFamily === 'sans'}
-            className="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="flex-1 py-2 px-3 rounded-lg text-xs font-bold border transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[38px]"
             style={{
               backgroundColor: settings.fontFamily === 'sans' ? theme.accent : 'transparent',
               color: settings.fontFamily === 'sans' ? theme.accentText : theme.text,
               borderColor: settings.fontFamily === 'sans' ? theme.accent : theme.border,
-              boxShadow: settings.fontFamily === 'sans' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
+              boxShadow: settings.fontFamily === 'sans' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
             }}
           >
             Sans-Serif
@@ -146,13 +144,13 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontFamily: 'dyslexic' })}
             aria-pressed={settings.fontFamily === 'dyslexic'}
-            className="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="flex-1 py-2 px-3 rounded-lg text-xs font-bold border transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[38px]"
             style={{
               backgroundColor: settings.fontFamily === 'dyslexic' ? theme.accent : 'transparent',
               color: settings.fontFamily === 'dyslexic' ? theme.accentText : theme.text,
               borderColor: settings.fontFamily === 'dyslexic' ? theme.accent : theme.border,
               fontFamily: 'OpenDyslexic, "Comic Sans MS", cursive, sans-serif',
-              boxShadow: settings.fontFamily === 'dyslexic' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
+              boxShadow: settings.fontFamily === 'dyslexic' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
             }}
           >
             OpenDyslexic
@@ -162,7 +160,7 @@ export default function Toolbar({
 
       {/* Bionic Reading Toggle */}
       <div
-        className="flex items-center justify-between p-3 rounded-2xl border transition-all"
+        className="flex items-center justify-between p-3 rounded-xl border transition-all"
         style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
       >
         <label
@@ -197,7 +195,7 @@ export default function Toolbar({
 
       {/* Reading Ruler Focus Guide Toggle */}
       <div
-        className="flex items-center justify-between p-3 rounded-2xl border transition-all"
+        className="flex items-center justify-between p-3 rounded-xl border transition-all"
         style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
       >
         <label
@@ -245,7 +243,7 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontSize: Math.max(14, settings.fontSize - 1) })}
             aria-label="Decrease font size"
-            className="p-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
             style={{ borderColor: theme.border, color: theme.text }}
           >
             <Minus size={12} />
@@ -279,7 +277,7 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontSize: Math.min(36, settings.fontSize + 1) })}
             aria-label="Increase font size"
-            className="p-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
             style={{ borderColor: theme.border, color: theme.text }}
           >
             <Plus size={12} />
@@ -287,7 +285,7 @@ export default function Toolbar({
         </div>
       </div>
 
-      {/* Line Height Slider with Floating Pill Tooltip */}
+      {/* Line Height Slider with Floating Pill Tooltip & Stepper Buttons */}
       <div className="space-y-2 relative">
         <div className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span>Line Spacing</span>
@@ -295,35 +293,53 @@ export default function Toolbar({
             {settings.lineHeight.toFixed(1)}x
           </span>
         </div>
-        <div className="relative flex items-center">
-          {activeTooltip === 'lineHeight' && (
-            <div
-              className="absolute -top-7 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shadow-md transform -translate-x-1/2 pointer-events-none"
-              style={{
-                left: `${((settings.lineHeight - 1.2) / (3.0 - 1.2)) * 100}%`,
-                backgroundColor: theme.accent,
-                color: theme.accentText,
-              }}
-            >
-              {settings.lineHeight.toFixed(1)}x
-            </div>
-          )}
-          <input
-            type="range"
-            min={1.2}
-            max={3.0}
-            step={0.1}
-            value={settings.lineHeight}
-            onMouseEnter={() => setActiveTooltip('lineHeight')}
-            onMouseLeave={() => setActiveTooltip(null)}
-            onChange={(e) => update({ lineHeight: Number(e.target.value) })}
-            aria-label="Line height slider"
-            className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
-          />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => update({ lineHeight: Math.max(1.2, Number((settings.lineHeight - 0.1).toFixed(1))) })}
+            aria-label="Decrease line spacing"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            style={{ borderColor: theme.border, color: theme.text }}
+          >
+            <Minus size={12} />
+          </button>
+          <div className="relative flex-1 flex items-center">
+            {activeTooltip === 'lineHeight' && (
+              <div
+                className="absolute -top-7 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shadow-md transform -translate-x-1/2 pointer-events-none"
+                style={{
+                  left: `${((settings.lineHeight - 1.2) / (3.0 - 1.2)) * 100}%`,
+                  backgroundColor: theme.accent,
+                  color: theme.accentText,
+                }}
+              >
+                {settings.lineHeight.toFixed(1)}x
+              </div>
+            )}
+            <input
+              type="range"
+              min={1.2}
+              max={3.0}
+              step={0.1}
+              value={settings.lineHeight}
+              onMouseEnter={() => setActiveTooltip('lineHeight')}
+              onMouseLeave={() => setActiveTooltip(null)}
+              onChange={(e) => update({ lineHeight: Number(e.target.value) })}
+              aria-label="Line spacing slider"
+              className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
+            />
+          </div>
+          <button
+            onClick={() => update({ lineHeight: Math.min(3.0, Number((settings.lineHeight + 0.1).toFixed(1))) })}
+            aria-label="Increase line spacing"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            style={{ borderColor: theme.border, color: theme.text }}
+          >
+            <Plus size={12} />
+          </button>
         </div>
       </div>
 
-      {/* Letter Spacing Slider with Floating Pill Tooltip */}
+      {/* Letter Spacing Slider with Floating Pill Tooltip & Stepper Buttons */}
       <div className="space-y-2 relative">
         <div className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span>Letter Spacing</span>
@@ -331,31 +347,49 @@ export default function Toolbar({
             {settings.letterSpacing.toFixed(2)}em
           </span>
         </div>
-        <div className="relative flex items-center">
-          {activeTooltip === 'letterSpacing' && (
-            <div
-              className="absolute -top-7 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shadow-md transform -translate-x-1/2 pointer-events-none"
-              style={{
-                left: `${(settings.letterSpacing / 0.25) * 100}%`,
-                backgroundColor: theme.accent,
-                color: theme.accentText,
-              }}
-            >
-              {settings.letterSpacing.toFixed(2)}em
-            </div>
-          )}
-          <input
-            type="range"
-            min={0}
-            max={0.25}
-            step={0.01}
-            value={settings.letterSpacing}
-            onMouseEnter={() => setActiveTooltip('letterSpacing')}
-            onMouseLeave={() => setActiveTooltip(null)}
-            onChange={(e) => update({ letterSpacing: Number(e.target.value) })}
-            aria-label="Letter spacing slider"
-            className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
-          />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => update({ letterSpacing: Math.max(0, Number((settings.letterSpacing - 0.01).toFixed(2))) })}
+            aria-label="Decrease letter spacing"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            style={{ borderColor: theme.border, color: theme.text }}
+          >
+            <Minus size={12} />
+          </button>
+          <div className="relative flex-1 flex items-center">
+            {activeTooltip === 'letterSpacing' && (
+              <div
+                className="absolute -top-7 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold shadow-md transform -translate-x-1/2 pointer-events-none"
+                style={{
+                  left: `${(settings.letterSpacing / 0.25) * 100}%`,
+                  backgroundColor: theme.accent,
+                  color: theme.accentText,
+                }}
+              >
+                {settings.letterSpacing.toFixed(2)}em
+              </div>
+            )}
+            <input
+              type="range"
+              min={0}
+              max={0.25}
+              step={0.01}
+              value={settings.letterSpacing}
+              onMouseEnter={() => setActiveTooltip('letterSpacing')}
+              onMouseLeave={() => setActiveTooltip(null)}
+              onChange={(e) => update({ letterSpacing: Number(e.target.value) })}
+              aria-label="Letter spacing slider"
+              className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
+            />
+          </div>
+          <button
+            onClick={() => update({ letterSpacing: Math.min(0.25, Number((settings.letterSpacing + 0.01).toFixed(2))) })}
+            aria-label="Increase letter spacing"
+            className="p-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            style={{ borderColor: theme.border, color: theme.text }}
+          >
+            <Plus size={12} />
+          </button>
         </div>
       </div>
 
@@ -373,7 +407,7 @@ export default function Toolbar({
                 onClick={() => update({ theme: key })}
                 aria-pressed={isSelected}
                 aria-label={`${themes[key].name} theme`}
-                className="flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-bold border transition-opacity duration-150 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="flex items-center gap-2 py-2 px-3 rounded-lg text-xs font-bold border transition-opacity duration-150 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[38px]"
                 style={{
                   backgroundColor: isSelected ? theme.accent : 'transparent',
                   color: isSelected ? theme.accentText : theme.text,

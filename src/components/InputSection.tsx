@@ -78,18 +78,17 @@ export default function InputSection({
 
   return (
     <section aria-label="Content input" className="w-full max-w-3xl mx-auto">
-      {/* Sleek unified glassmorphic input capsule */}
+      {/* Unified clean input container */}
       <div
-        className="rounded-3xl border p-2 sm:p-3 shadow-xl backdrop-blur-xl transition-all duration-300"
+        className="rounded-2xl border p-2 sm:p-3 shadow-sm backdrop-blur-xl transition-all duration-200"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
-          boxShadow: `0 12px 36px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
         }}
       >
-        {/* Floating Capsule Tabs */}
+        {/* Capsule Tabs */}
         <div
-          className="flex gap-1.5 p-1.5 rounded-2xl mb-3 border transition-colors"
+          className="flex gap-1.5 p-1.5 rounded-xl mb-3 border transition-colors"
           style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
           role="tablist"
         >
@@ -100,11 +99,11 @@ export default function InputSection({
               setActiveTab('url');
               setError(null);
             }}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[40px]"
             style={{
               backgroundColor: activeTab === 'url' ? theme.card : 'transparent',
               color: activeTab === 'url' ? theme.text : theme.secondaryText,
-              boxShadow: activeTab === 'url' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+              boxShadow: activeTab === 'url' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
             }}
           >
             <Link2 size={15} aria-hidden="true" />
@@ -117,11 +116,11 @@ export default function InputSection({
               setActiveTab('text');
               setError(null);
             }}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[40px]"
             style={{
               backgroundColor: activeTab === 'text' ? theme.card : 'transparent',
               color: activeTab === 'text' ? theme.text : theme.secondaryText,
-              boxShadow: activeTab === 'text' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+              boxShadow: activeTab === 'text' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
             }}
           >
             <Type size={15} aria-hidden="true" />
@@ -140,7 +139,7 @@ export default function InputSection({
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="Paste URL (e.g. wikipedia.org/wiki/Neurodiversity or news)..."
                   aria-label="Article or webpage URL"
-                  className="w-full px-4 py-3.5 rounded-2xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all pr-9 shadow-inner"
+                  className="w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all pr-9 min-h-[44px]"
                   style={{
                     backgroundColor: theme.inputBg,
                     borderColor: theme.border,
@@ -164,7 +163,7 @@ export default function InputSection({
                 onClick={handleUrlSubmit}
                 disabled={loading}
                 aria-label="Extract article content"
-                className="px-6 py-3.5 rounded-2xl text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md whitespace-nowrap"
+                className="px-6 py-3 rounded-xl text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm whitespace-nowrap min-h-[44px]"
                 style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
               >
                 {loading ? (
@@ -187,7 +186,7 @@ export default function InputSection({
               placeholder="Paste or type any article, study guide, work report, or essay here..."
               aria-label="Raw text content"
               rows={5}
-              className="w-full px-4 py-3 rounded-2xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y transition-all shadow-inner"
+              className="w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y transition-all"
               style={{
                 backgroundColor: theme.inputBg,
                 borderColor: theme.border,
@@ -198,7 +197,7 @@ export default function InputSection({
               <button
                 onClick={handleTextSubmit}
                 aria-label="Load pasted text into reader"
-                className="px-6 py-3 rounded-2xl text-sm font-bold transition-opacity hover:opacity-90 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md"
+                className="px-6 py-3 rounded-xl text-sm font-bold transition-opacity hover:opacity-90 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[44px]"
                 style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
               >
                 <FileText size={16} aria-hidden="true" />
@@ -246,7 +245,7 @@ export default function InputSection({
       {error && (
         <div
           role="alert"
-          className="mt-4 flex items-start gap-2.5 p-3.5 rounded-2xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-sm"
+          className="mt-4 flex items-start gap-2.5 p-3.5 rounded-xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-sm"
         >
           <AlertCircle size={16} aria-hidden="true" className="flex-shrink-0 mt-0.5" />
           <div className="flex-1">

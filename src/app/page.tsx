@@ -177,7 +177,7 @@ export default function Home() {
             {article && (
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[36px]"
                 style={{
                   borderColor: theme.border,
                   backgroundColor: isSidebarOpen ? theme.highlightBg : theme.card,
@@ -193,7 +193,7 @@ export default function Home() {
             {article && (
               <button
                 onClick={handleResetHome}
-                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[36px]"
                 style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
                 title="Go back to hero input"
               >
@@ -206,7 +206,7 @@ export default function Home() {
               href="https://github.com/GhostyTechno76/ClearText-AI"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-lg border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[36px]"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
             >
               GitHub
@@ -326,7 +326,7 @@ export default function Home() {
 
           {showNewInput && (
             <div
-              className="mb-8 p-6 rounded-3xl border shadow-xl backdrop-blur-xl"
+              className="mb-8 p-6 rounded-2xl border shadow-sm backdrop-blur-xl"
               style={{ backgroundColor: theme.card, borderColor: theme.border }}
             >
               <InputSection
@@ -366,7 +366,7 @@ export default function Home() {
             <main className="flex-1 min-w-0 space-y-5">
               {/* AI Transformation Action Bar */}
               <div
-                className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-3xl border shadow-md backdrop-blur-xl"
+                className="flex flex-wrap items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border shadow-sm backdrop-blur-xl"
                 style={{ backgroundColor: theme.card, borderColor: theme.border }}
                 role="toolbar"
                 aria-label="AI reading tools"
@@ -376,11 +376,10 @@ export default function Home() {
                   <button
                     onClick={() => handleAI('simplify')}
                     disabled={aiLoading}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md relative overflow-hidden"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm relative overflow-hidden min-h-[40px]"
                     style={{
                       backgroundColor: theme.buttonBg,
                       color: theme.buttonText,
-                      boxShadow: `0 4px 12px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
                     }}
                     title="Rewrite text in plain, direct language"
                   >
@@ -396,7 +395,7 @@ export default function Home() {
                   <button
                     onClick={() => handleAI('summarize')}
                     disabled={aiLoading}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold border transition-colors hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-colors hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm min-h-[40px]"
                     style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
                     title="Extract key takeaways into bullet points"
                   >
@@ -412,7 +411,7 @@ export default function Home() {
                 {/* Comparative View Switcher (Available when AI result is present) */}
                 {aiResult && (
                   <div
-                    className="flex items-center gap-1 p-1 rounded-2xl border"
+                    className="flex items-center gap-1 p-1 rounded-xl border"
                     style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
                   >
                     <button
@@ -420,7 +419,7 @@ export default function Home() {
                         setViewMode('current');
                         setDisplayText(aiResult);
                       }}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[32px] flex items-center"
                       style={{
                         backgroundColor: viewMode === 'current' ? theme.card : 'transparent',
                         color: viewMode === 'current' ? theme.accent : theme.secondaryText,
@@ -437,7 +436,7 @@ export default function Home() {
                         setViewMode('original');
                         setDisplayText(article.textContent);
                       }}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[32px] flex items-center"
                       style={{
                         backgroundColor: viewMode === 'original' ? theme.card : 'transparent',
                         color: viewMode === 'original' ? theme.accent : theme.secondaryText,
@@ -451,7 +450,7 @@ export default function Home() {
 
                     <button
                       onClick={() => setViewMode('split')}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all hidden sm:inline-flex items-center"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all hidden sm:inline-flex items-center min-h-[32px]"
                       style={{
                         backgroundColor: viewMode === 'split' ? theme.card : 'transparent',
                         color: viewMode === 'split' ? theme.accent : theme.secondaryText,
@@ -470,7 +469,7 @@ export default function Home() {
               {aiError && (
                 <div
                   role="alert"
-                  className="p-4 rounded-2xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-sm"
+                  className="p-4 rounded-xl text-xs sm:text-sm bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shadow-sm"
                 >
                   {aiError}
                 </div>

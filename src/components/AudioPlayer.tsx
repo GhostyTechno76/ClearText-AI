@@ -161,11 +161,10 @@ export default function AudioPlayer({
 
   return (
     <div
-      className="p-3.5 sm:p-4 rounded-3xl border shadow-xl backdrop-blur-xl transition-all duration-300"
+      className="p-3.5 sm:p-4 rounded-2xl border shadow-sm backdrop-blur-xl transition-all duration-200"
       style={{
         backgroundColor: theme.card,
         borderColor: theme.border,
-        boxShadow: `0 8px 30px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
       }}
       role="region"
       aria-label="Read-aloud player"
@@ -177,11 +176,10 @@ export default function AudioPlayer({
           <button
             onClick={isPlaying ? pause : play}
             aria-label={isPlaying ? 'Pause reading aloud' : 'Start reading aloud'}
-            className="w-10 h-10 rounded-2xl transition-all duration-150 hover:opacity-90 shadow-md flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-xl transition-all duration-150 hover:opacity-90 shadow-sm flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               backgroundColor: theme.buttonBg,
               color: theme.buttonText,
-              boxShadow: `0 2px 8px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
             }}
             title={isPlaying ? 'Pause (Space)' : 'Play reading aloud'}
           >
@@ -193,7 +191,7 @@ export default function AudioPlayer({
             onClick={stop}
             disabled={!isPlaying && !isPaused && currentIndexRef.current === -1}
             aria-label="Stop reading"
-            className="w-9 h-9 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="w-9 h-9 rounded-lg border transition-all hover:opacity-80 disabled:opacity-30 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: theme.border, color: theme.text }}
             title="Stop reading"
           >
@@ -206,7 +204,7 @@ export default function AudioPlayer({
               onClick={prevParagraph}
               disabled={!isPlaying && !isPaused}
               aria-label="Previous section"
-              className="p-2 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="p-2 rounded-lg border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: theme.border, color: theme.text }}
               title="Previous section"
             >
@@ -216,7 +214,7 @@ export default function AudioPlayer({
               onClick={nextParagraph}
               disabled={!isPlaying && !isPaused}
               aria-label="Next section"
-              className="p-2 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="p-2 rounded-lg border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: theme.border, color: theme.text }}
               title="Next section"
             >
@@ -247,7 +245,7 @@ export default function AudioPlayer({
         </div>
 
         {/* Tactile Segmented Speed Selector */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl border" style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}>
+        <div className="flex items-center gap-1.5 p-1 rounded-xl border" style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}>
           <Gauge size={13} className="ml-1 opacity-70" style={{ color: theme.secondaryText }} aria-hidden="true" />
           <div className="flex items-center gap-1">
             {rates.map((r) => {
@@ -264,7 +262,7 @@ export default function AudioPlayer({
                   }}
                   aria-label={`Speech rate ${r}x`}
                   aria-pressed={isSelected}
-                  className="px-2.5 py-1 rounded-xl text-xs font-bold transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{
                     backgroundColor: isSelected ? theme.accent : 'transparent',
                     color: isSelected ? theme.accentText : theme.secondaryText,

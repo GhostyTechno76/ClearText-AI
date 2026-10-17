@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2, X, Sparkles } from 'lucide-react';
+import { Volume2, X, BookOpen } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 
 interface WordDefinitionPopoverProps {
@@ -33,13 +33,12 @@ export default function WordDefinitionPopover({
 
   return (
     <div
-      className="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-3 w-72 sm:w-80 rounded-2xl border p-4 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+      className="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-3 w-72 sm:w-80 rounded-xl border p-4 shadow-lg backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
       style={{
         left: `${data.x}px`,
         top: `${data.y}px`,
         backgroundColor: theme.card,
         borderColor: theme.border,
-        boxShadow: `0 16px 36px -4px ${theme.glowColor || 'rgba(0,0,0,0.15)'}`,
       }}
       role="dialog"
       aria-label={`Definition for ${data.word}`}
@@ -75,10 +74,10 @@ export default function WordDefinitionPopover({
         </button>
       </div>
 
-      {/* 5th-grade definition */}
+      {/* Definition */}
       <div className="space-y-2 text-xs">
         <div className="flex items-start gap-1.5">
-          <Sparkles size={13} className="flex-shrink-0 mt-0.5" style={{ color: theme.accent }} />
+          <BookOpen size={13} className="flex-shrink-0 mt-0.5" style={{ color: theme.accent }} />
           <p className="leading-relaxed" style={{ color: theme.text }}>
             {data.definition}
           </p>

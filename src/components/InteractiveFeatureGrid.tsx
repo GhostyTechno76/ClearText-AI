@@ -47,24 +47,23 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-16 text-left">
       {/* 1. Bionic Reading Playground */}
       <div
-        className="p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+        className="p-5 rounded-xl border transition-all duration-200 shadow-sm flex flex-col justify-between group"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
-          boxShadow: `0 4px 20px -2px ${theme.glowColor || 'rgba(0,0,0,0.04)'}`,
         }}
       >
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-colors"
+              className="p-2 rounded-lg transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Eye size={18} aria-hidden="true" />
             </div>
             <button
               onClick={() => setBionicActive(!bionicActive)}
-              className="text-[11px] font-bold px-2 py-0.5 rounded-md border transition-all hover:opacity-80"
+              className="text-[11px] font-bold px-2 py-1 rounded-md border transition-all hover:opacity-80 min-h-[28px]"
               style={{
                 borderColor: theme.border,
                 backgroundColor: bionicActive ? theme.accent : 'transparent',
@@ -85,7 +84,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
 
         {/* Mini interactive preview */}
         <div
-          className="p-2.5 rounded-xl border text-xs leading-relaxed transition-all cursor-pointer"
+          className="p-2.5 rounded-lg border text-xs leading-relaxed transition-all cursor-pointer"
           style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
           onClick={() => setBionicActive(!bionicActive)}
           title="Click to toggle Bionic effect"
@@ -100,17 +99,16 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
 
       {/* 2. AI Simplification Playground */}
       <div
-        className="p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+        className="p-5 rounded-xl border transition-all duration-200 shadow-sm flex flex-col justify-between group"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
-          boxShadow: `0 4px 20px -2px ${theme.glowColor || 'rgba(0,0,0,0.04)'}`,
         }}
       >
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-colors"
+              className="p-2 rounded-lg transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Sparkles size={18} aria-hidden="true" />
@@ -132,7 +130,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         {/* Mini interactive slider/toggle */}
         <div
           onClick={() => setSimplificationLevel(simplificationLevel === 0 ? 1 : 0)}
-          className="p-2.5 rounded-xl border text-xs leading-relaxed transition-all cursor-pointer relative overflow-hidden"
+          className="p-2.5 rounded-lg border text-xs leading-relaxed transition-all cursor-pointer relative overflow-hidden"
           style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
           title="Click to toggle between Academic and Plain Language version"
         >
@@ -148,24 +146,23 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
 
       {/* 3. Dyslexia Typography Playground */}
       <div
-        className="p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+        className="p-5 rounded-xl border transition-all duration-200 shadow-sm flex flex-col justify-between group"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
-          boxShadow: `0 4px 20px -2px ${theme.glowColor || 'rgba(0,0,0,0.04)'}`,
         }}
       >
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-colors"
+              className="p-2 rounded-lg transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Shield size={18} aria-hidden="true" />
             </div>
             <button
               onClick={() => setIsDyslexicPreview(!isDyslexicPreview)}
-              className="text-[11px] font-bold px-2 py-0.5 rounded-md border transition-all hover:opacity-80"
+              className="text-[11px] font-bold px-2 py-1 rounded-md border transition-all hover:opacity-80 min-h-[28px]"
               style={{
                 borderColor: theme.border,
                 backgroundColor: isDyslexicPreview ? theme.accent : 'transparent',
@@ -187,7 +184,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         {/* Mini interactive typography view */}
         <div
           onClick={() => setIsDyslexicPreview(!isDyslexicPreview)}
-          className="p-2.5 rounded-xl border text-xs leading-relaxed transition-all cursor-pointer"
+          className="p-2.5 rounded-lg border text-xs leading-relaxed transition-all cursor-pointer"
           style={{
             backgroundColor: theme.inputBg,
             borderColor: theme.border,
@@ -208,17 +205,16 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
 
       {/* 4. Synchronized Audio Playground */}
       <div
-        className="p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg flex flex-col justify-between group"
+        className="p-5 rounded-xl border transition-all duration-200 shadow-sm flex flex-col justify-between group"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
-          boxShadow: `0 4px 20px -2px ${theme.glowColor || 'rgba(0,0,0,0.04)'}`,
         }}
       >
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-colors"
+              className="p-2 rounded-lg transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Volume2 size={18} aria-hidden="true" />
@@ -241,7 +237,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         {/* Mini interactive play button */}
         <button
           onClick={handleTestAudio}
-          className="w-full py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 hover:opacity-90"
+          className="w-full py-2.5 px-3 rounded-lg border text-xs font-bold transition-all flex items-center justify-center gap-2 hover:opacity-90 min-h-[38px]"
           style={{
             backgroundColor: audioTesting ? theme.accent : theme.inputBg,
             color: audioTesting ? theme.accentText : theme.text,
