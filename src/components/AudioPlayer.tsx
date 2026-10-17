@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, Square, Gauge, SkipForward, SkipBack, Volume2, Sparkles } from 'lucide-react';
+import { Play, Pause, Square, Gauge, SkipForward, SkipBack, Volume2 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { splitIntoParagraphs } from '@/lib/bionic';
 
@@ -10,6 +10,8 @@ interface AudioPlayerProps {
   theme: ThemeConfig;
   activeParagraphIndex: number;
   onActiveParagraphChange: (index: number) => void;
+  playRequestId?: number;
+  onPlayingChange?: (isPlaying: boolean) => void;
 }
 
 export default function AudioPlayer({
@@ -17,11 +19,17 @@ export default function AudioPlayer({
   theme,
   activeParagraphIndex,
   onActiveParagraphChange,
+  playRequestId,
+  onPlayingChange,
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [rate, setRate] = useState(1);
   const [supported, setSupported] = useState(true);
+
+  useEffect(() => {
+    onPlayingChange?.(isPlaying);
+  }, [isPlaying, onPlayingChange]);
 
   const rates = [0.75, 1, 1.25, 1.5];
   const paragraphsRef = useRef<string[]>([]);
@@ -124,16 +132,27 @@ export default function AudioPlayer({
     speakParagraph(prevIdx);
   }, [speakParagraph]);
 
-  // Handle external selection change (e.g. user clicked a paragraph directly in canvas)
+  // Handle external selection change (e.g. user clicked or pressed Enter on a paragraph directly in canvas)
   useEffect(() => {
     if (
       activeParagraphIndex >= 0 &&
-      activeParagraphIndex !== currentIndexRef.current &&
-      isPlaying
+      activeParagraphIndex !== currentIndexRef.current
     ) {
       speakParagraph(activeParagraphIndex);
     }
-  }, [activeParagraphIndex, isPlaying, speakParagraph]);
+  }, [activeParagraphIndex, speakParagraph]);
+
+  // Handle direct click/play requests on paragraph (even if same index)
+  const initialMountRef = useRef(true);
+  useEffect(() => {
+    if (initialMountRef.current) {
+      initialMountRef.current = false;
+      return;
+    }
+    if (activeParagraphIndex >= 0) {
+      speakParagraph(activeParagraphIndex);
+    }
+  }, [playRequestId, activeParagraphIndex, speakParagraph]);
 
   // Cleanup on unmount or when text changes
   useEffect(() => {
@@ -277,32 +296,56 @@ export default function AudioPlayer({
         </div>
       </div>
 
-      {/* Interactive Paragraph Scrubber Bar */}
+      {/* Interactive & Keyboard-Accessible Paragraph Scrubber Bar */}
       {totalParagraphs > 0 && (
         <div className="mt-3 pt-2 border-t flex items-center gap-3" style={{ borderColor: theme.border }}>
           <span className="text-[10px] font-mono opacity-70" style={{ color: theme.secondaryText }}>
             Progress
           </span>
           <div
-            className="flex-1 h-2 rounded-full cursor-pointer relative overflow-hidden transition-all bg-black/10 dark:bg-white/10"
+            role="slider"
+            tabIndex={0}
+            aria-label="Reading progress scrubber"
+            aria-valuemin={1}
+            aria-valuemax={totalParagraphs}
+            aria-valuenow={currentNum > 0 ? currentNum : 1}
+            aria-valuetext={currentNum > 0 ? `Section ${currentNum} of ${totalParagraphs}` : 'Not started'}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                prevParagraph();
+              } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                nextParagraph();
+              } else if (e.key === 'Home') {
+                e.preventDefault();
+                speakParagraph(0);
+              } else if (e.key === 'End') {
+                e.preventDefault();
+                speakParagraph(totalParagraphs - 1);
+              }
+            }}
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const clickX = e.clientX - rect.left;
               const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-              const targetIndex = Math.floor(ratio * totalParagraphs);
+              const targetIndex = Math.min(totalParagraphs - 1, Math.floor(ratio * totalParagraphs));
               speakParagraph(targetIndex);
             }}
-            title="Click scrubber to jump directly to any paragraph"
+            className="flex-1 h-3 py-0.5 rounded-full cursor-pointer relative transition-all focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+            title="Jump or use arrow keys to navigate reading sections"
           >
-            <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{
-                width: `${progressPercent}%`,
-                backgroundColor: theme.accent,
-              }}
-            />
+            <div className="w-full h-2 rounded-full relative overflow-hidden bg-black/10 dark:bg-white/10">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width: `${progressPercent}%`,
+                  backgroundColor: theme.accent,
+                }}
+              />
+            </div>
           </div>
-          <span className="text-[10px] font-mono font-bold" style={{ color: theme.secondaryText }}>
+          <span className="text-[10px] font-mono font-bold min-w-[32px] text-right" style={{ color: theme.secondaryText }}>
             {Math.round(progressPercent)}%
           </span>
         </div>

@@ -219,12 +219,7 @@ export default function ReaderCanvas({
           const isActive = activeParagraphIndex === idx;
           const isBullet = /^[•\-\*]\s+/.test(p) || /^\d+\.\s+/.test(p);
           const cleanText = p.replace(/^[•\-\*]\s+/, '').replace(/^\d+\.\s+/, '');
-
-          const paragraphHtml = settings.bionicReading
-            ? bionicParagraph(isBullet ? cleanText : p)
-            : isBullet
-            ? cleanText
-            : p;
+          const bulletContent = isBullet ? cleanText : p;
 
           if (isBullet) {
             return (
@@ -247,7 +242,7 @@ export default function ReaderCanvas({
                     onParagraphClick?.(idx);
                   }
                 }}
-                aria-label={`Key takeaway bullet point ${idx + 1}`}
+                aria-label={`Key takeaway bullet point ${idx + 1}. Click to read aloud.`}
               >
                 <div className="flex items-start gap-3">
                   <div
@@ -256,11 +251,20 @@ export default function ReaderCanvas({
                   >
                     <BookOpen size={14} />
                   </div>
-                  <div
-                    className="flex-1 font-medium"
-                    style={{ lineHeight: settings.lineHeight }}
-                    dangerouslySetInnerHTML={{ __html: paragraphHtml }}
-                  />
+                  {settings.bionicReading ? (
+                    <div
+                      className="flex-1 font-medium"
+                      style={{ lineHeight: settings.lineHeight }}
+                      dangerouslySetInnerHTML={{ __html: bionicParagraph(bulletContent) }}
+                    />
+                  ) : (
+                    <div
+                      className="flex-1 font-medium"
+                      style={{ lineHeight: settings.lineHeight }}
+                    >
+                      {bulletContent}
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -298,11 +302,20 @@ export default function ReaderCanvas({
                 </div>
               )}
 
-              <div
-                className="transition-all"
-                style={{ lineHeight: settings.lineHeight }}
-                dangerouslySetInnerHTML={{ __html: paragraphHtml }}
-              />
+              {settings.bionicReading ? (
+                <div
+                  className="transition-all"
+                  style={{ lineHeight: settings.lineHeight }}
+                  dangerouslySetInnerHTML={{ __html: bionicParagraph(p) }}
+                />
+              ) : (
+                <div
+                  className="transition-all"
+                  style={{ lineHeight: settings.lineHeight }}
+                >
+                  {p}
+                </div>
+              )}
             </div>
           );
         })}

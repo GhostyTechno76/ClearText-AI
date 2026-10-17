@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link2, Type, FileText, Loader2, AlertCircle, X, BookOpen, ArrowRight } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { sampleArticlesList } from '@/lib/sample-article';
@@ -23,6 +23,9 @@ export default function InputSection({
   const [textInput, setTextInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const urlTabRef = useRef<HTMLButtonElement>(null);
+  const textTabRef = useRef<HTMLButtonElement>(null);
 
   const handleUrlSubmit = async () => {
     let cleanUrl = url.trim();
@@ -91,13 +94,26 @@ export default function InputSection({
           className="flex gap-1.5 p-1.5 rounded-xl mb-3 border transition-colors"
           style={{ backgroundColor: theme.inputBg, borderColor: theme.border }}
           role="tablist"
+          aria-label="Input method selector"
         >
           <button
+            ref={urlTabRef}
+            id="tab-url"
             role="tab"
             aria-selected={activeTab === 'url'}
+            aria-controls="panel-url"
+            tabIndex={activeTab === 'url' ? 0 : -1}
             onClick={() => {
               setActiveTab('url');
               setError(null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                setActiveTab('text');
+                setError(null);
+                textTabRef.current?.focus();
+              }
             }}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[40px]"
             style={{
@@ -110,11 +126,23 @@ export default function InputSection({
             <span>Web Article URL</span>
           </button>
           <button
+            ref={textTabRef}
+            id="tab-text"
             role="tab"
             aria-selected={activeTab === 'text'}
+            aria-controls="panel-text"
+            tabIndex={activeTab === 'text' ? 0 : -1}
             onClick={() => {
               setActiveTab('text');
               setError(null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                setActiveTab('url');
+                setError(null);
+                urlTabRef.current?.focus();
+              }
             }}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 min-h-[40px]"
             style={{
@@ -130,7 +158,7 @@ export default function InputSection({
 
         {/* URL Input Form */}
         {activeTab === 'url' && (
-          <div role="tabpanel" className="space-y-3 p-1">
+          <div id="panel-url" role="tabpanel" aria-labelledby="tab-url" className="space-y-3 p-1">
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <input
@@ -179,7 +207,7 @@ export default function InputSection({
 
         {/* Text Input Form */}
         {activeTab === 'text' && (
-          <div role="tabpanel" className="space-y-3 p-1">
+          <div id="panel-text" role="tabpanel" aria-labelledby="tab-text" className="space-y-3 p-1">
             <textarea
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}

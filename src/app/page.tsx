@@ -38,10 +38,17 @@ export default function Home() {
   const [aiError, setAiError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'current' | 'original' | 'split'>('current');
   const [activeParagraphIndex, setActiveParagraphIndex] = useState<number>(-1);
+  const [isAudioPlaying, setIsAudioPlaying] = useState<boolean>(false);
+  const [playRequestId, setPlayRequestId] = useState<number>(0);
   const [showNewInput, setShowNewInput] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const theme = themes[settings.theme];
+
+  const handleParagraphClick = useCallback((idx: number) => {
+    setActiveParagraphIndex(idx);
+    setPlayRequestId((prev) => prev + 1);
+  }, []);
 
   // Global keyboard shortcut: Ctrl+\ or Cmd+\ to toggle collapsible settings toolbar
   useEffect(() => {
@@ -67,6 +74,8 @@ export default function Home() {
     setAiError(null);
     setViewMode('current');
     setActiveParagraphIndex(-1);
+    setIsAudioPlaying(false);
+    setPlayRequestId(0);
     setLoading(false);
     setShowNewInput(false);
   }, []);
@@ -82,6 +91,8 @@ export default function Home() {
     setAiError(null);
     setViewMode('current');
     setActiveParagraphIndex(-1);
+    setIsAudioPlaying(false);
+    setPlayRequestId(0);
     setShowNewInput(false);
   }, []);
 
@@ -481,6 +492,8 @@ export default function Home() {
                 theme={theme}
                 activeParagraphIndex={activeParagraphIndex}
                 onActiveParagraphChange={setActiveParagraphIndex}
+                playRequestId={playRequestId}
+                onPlayingChange={setIsAudioPlaying}
               />
 
               {/* Reader Canvas / Split View */}
@@ -498,8 +511,8 @@ export default function Home() {
                       settings={settings}
                       theme={theme}
                       activeParagraphIndex={activeParagraphIndex}
-                      onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
-                      isAudioPlaying={false}
+                      onParagraphClick={handleParagraphClick}
+                      isAudioPlaying={isAudioPlaying}
                     />
                   </div>
                   <div>
@@ -514,8 +527,8 @@ export default function Home() {
                       settings={settings}
                       theme={theme}
                       activeParagraphIndex={activeParagraphIndex}
-                      onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
-                      isAudioPlaying={activeParagraphIndex >= 0}
+                      onParagraphClick={handleParagraphClick}
+                      isAudioPlaying={isAudioPlaying}
                     />
                   </div>
                 </div>
@@ -527,8 +540,8 @@ export default function Home() {
                   settings={settings}
                   theme={theme}
                   activeParagraphIndex={activeParagraphIndex}
-                  onParagraphClick={(idx) => setActiveParagraphIndex(idx)}
-                  isAudioPlaying={activeParagraphIndex >= 0}
+                  onParagraphClick={handleParagraphClick}
+                  isAudioPlaying={isAudioPlaying}
                 />
               )}
             </main>
