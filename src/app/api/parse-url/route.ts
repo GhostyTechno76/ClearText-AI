@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'Could not extract readable article text from this page. It might be heavily client-side rendered (SPA) or paywalled. You can copy-paste the text directly using the "Direct Text Input" tab.',
+            'Could not extract readable article text from this page. Some dynamic, interactive, or paywalled websites cannot be processed automatically. You can copy and paste the text directly into the "Direct Text / Paste" tab.',
         },
         { status: 422 }
       );

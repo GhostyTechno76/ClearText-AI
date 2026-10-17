@@ -5,10 +5,9 @@ import { ThemeConfig, ReaderSettings } from '@/lib/themes';
 import { bionicParagraph, splitIntoParagraphs } from '@/lib/bionic';
 import { estimateReadingTime } from '@/lib/utils';
 import { lookupWord } from '@/lib/dictionary';
-import { Clock, Hash, Copy, Check, Printer, Volume2, Sparkles, BookOpen } from 'lucide-react';
+import { Clock, Hash, Copy, Check, Printer, Volume2, BookOpen } from 'lucide-react';
 import ReadingRuler from '@/components/ReadingRuler';
 import WordDefinitionPopover from '@/components/WordDefinitionPopover';
-import CognitiveFocusOrb from '@/components/CognitiveFocusOrb';
 
 interface ReaderCanvasProps {
   title: string;
@@ -176,12 +175,10 @@ export default function ReaderCanvas({
         </h1>
 
         <div className="flex flex-wrap items-center gap-4 text-xs">
-          {/* Ambient Cognitive Focus Orb Anti-Gravity Element */}
-          <div className="flex items-center gap-2">
-            <CognitiveFocusOrb isPlaying={isAudioPlaying} theme={theme} />
-            <span className="font-bold tracking-wide" style={{ color: theme.text }}>
-              Clarity Sync
-            </span>
+          {/* Audio Status */}
+          <div className="flex items-center gap-1.5 font-semibold" style={{ color: isAudioPlaying ? theme.accent : theme.secondaryText }}>
+            <Volume2 size={13} aria-hidden="true" />
+            <span>{isAudioPlaying ? 'Reading Aloud' : 'Read Aloud Ready'}</span>
           </div>
 
           <span className="opacity-30">•</span>
@@ -199,8 +196,8 @@ export default function ReaderCanvas({
           </span>
 
           <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-normal opacity-70 italic ml-auto" style={{ color: theme.secondaryText }}>
-            <Sparkles size={11} style={{ color: theme.accent }} />
-            Double-click any complex word for instant 5th-grade definition
+            <BookOpen size={11} style={{ color: theme.accent }} />
+            Select any word to view a definition
           </span>
         </div>
       </header>

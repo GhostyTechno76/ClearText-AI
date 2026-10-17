@@ -22,15 +22,15 @@ export const sampleArticlesList = [
   {
     id: 'science-reading',
     title: 'The Science of Reading: How Our Brains Decode Text',
-    badge: '⚡ Science of Reading (3 min)',
-    siteName: 'Neuroscience Daily',
+    badge: 'Science of Reading (3 min)',
+    siteName: 'Demo Article • Reading Science',
     textContent: sampleArticle.textContent,
   },
   {
     id: 'neurodiversity',
     title: 'Neurodiversity & Cognitive Strengths in Modern Workspaces',
-    badge: '🧠 Neurodiversity & Cognition (2 min)',
-    siteName: 'Cognitive Frontiers',
+    badge: 'Neurodiversity & Cognition (2 min)',
+    siteName: 'Demo Article • Cognitive Research',
     textContent: `Neurodiversity describes the natural variations in how human brains process information, learn, and experience the world. Rather than viewing conditions like dyslexia, ADHD, autism, and dyspraxia as deficits to be corrected, the neurodiversity paradigm recognizes them as valuable cognitive variations with distinct strengths.
 
 For example, individuals with dyslexia frequently demonstrate exceptional spatial reasoning, creative problem-solving skills, and holistic interconnected thinking. Many pioneering architects, inventors, and entrepreneurs attribute their innovative perspectives directly to dyslexic thinking styles.
@@ -42,8 +42,8 @@ Designing digital tools with neurodiversity at the center creates a universal be
   {
     id: 'bionic-vision',
     title: 'Saccadic Eye Movement and Artificial Fixation in Reading',
-    badge: '🔬 Bionic Fixation & Flow (2 min)',
-    siteName: 'Visual Ergonomics Journal',
+    badge: 'Reading Flow & Fixation (2 min)',
+    siteName: 'Demo Article • Eye Movement Research',
     textContent: `When we read continuous prose, our eyes do not glide smoothly across lines of text. Instead, they execute rapid ballistic jumps called saccades, interspersed with brief stationary moments known as fixations. During each fixation, which typically lasts between 200 and 250 milliseconds, our foveal vision captures a window of approximately 7 to 9 characters.
 
 Traditional reading requires the visual system to constantly calibrate the optimal landing position for each subsequent saccade. For readers experiencing visual stress, convergence fatigue, or phonological processing delays, erratic saccades frequently result in regressive eye movements — jumping backward to reread previously decoded words.

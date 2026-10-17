@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Link2, Type, FileText, Loader2, AlertCircle, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Link2, Type, FileText, Loader2, AlertCircle, X, BookOpen, ArrowRight } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { sampleArticlesList } from '@/lib/sample-article';
 
@@ -172,7 +172,7 @@ export default function InputSection({
                 ) : (
                   <FileText size={16} aria-hidden="true" />
                 )}
-                {loading ? 'Refracting Content...' : 'Extract & Read'}
+                {loading ? 'Loading article...' : 'Extract & Read'}
               </button>
             </div>
           </div>
@@ -213,8 +213,8 @@ export default function InputSection({
       {/* Quick Try Chips */}
       <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-2">
         <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: theme.secondaryText }}>
-          <Sparkles size={13} style={{ color: theme.accent }} />
-          <span>Quick Try Sample Articles:</span>
+          <BookOpen size={13} style={{ color: theme.accent }} />
+          <span>Sample Articles:</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {sampleArticlesList.map((sample) => (

@@ -79,7 +79,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
             Bionic Reading
           </h3>
           <p className="text-xs leading-relaxed mb-3" style={{ color: theme.secondaryText }}>
-            Guides saccadic eye movements by bolding the initial anchors of words.
+            Bolds the start of words to help guide your eyes across text.
           </p>
         </div>
 
@@ -118,14 +118,14 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
             <div className="flex items-center gap-1 text-[10px] font-bold">
               <span style={{ color: simplificationLevel === 0 ? theme.accent : theme.secondaryText }}>Academic</span>
               <span style={{ color: theme.secondaryText }}>⇄</span>
-              <span style={{ color: simplificationLevel === 1 ? theme.accent : theme.secondaryText }}>5th-Grade</span>
+              <span style={{ color: simplificationLevel === 1 ? theme.accent : theme.secondaryText }}>Plain Language</span>
             </div>
           </div>
           <h3 className="text-sm font-bold mb-1.5" style={{ color: theme.text }}>
             AI Simplification
           </h3>
           <p className="text-xs leading-relaxed mb-3" style={{ color: theme.secondaryText }}>
-            Translates technical jargon into crystal clear language while keeping all facts.
+            Translates technical jargon into plain language for easier reading.
           </p>
         </div>
 
@@ -134,10 +134,10 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
           onClick={() => setSimplificationLevel(simplificationLevel === 0 ? 1 : 0)}
           className="p-2.5 rounded-xl border text-xs leading-relaxed transition-all cursor-pointer relative overflow-hidden"
           style={{ backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }}
-          title="Click to toggle between Academic and 5th-Grade version"
+          title="Click to toggle between Academic and Plain Language version"
         >
           <div className="flex items-center gap-1.5 mb-1 text-[9px] font-bold tracking-wider uppercase" style={{ color: theme.accent }}>
-            <span>{simplificationLevel === 0 ? '🔬 Academic Prose' : '✨ 5th-Grade Plain English'}</span>
+            <span>{simplificationLevel === 0 ? 'Academic wording' : 'Plain language'}</span>
             <ArrowRight size={10} />
           </div>
           <p className="italic">
@@ -180,7 +180,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
             Dyslexia Typography
           </h3>
           <p className="text-xs leading-relaxed mb-3" style={{ color: theme.secondaryText }}>
-            Weighted bottoms prevent letter inversion (b vs d) with custom tracking.
+            Unique bottom-weighted letter shapes help prevent letter confusion.
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
             {isDyslexicPreview ? 'OpenDyslexic b d p q' : 'Standard Sans b d p q'}
           </p>
           <span className="block text-[10px] text-center opacity-70">
-            {isDyslexicPreview ? 'Bottom-weighted glyphs active' : 'Click to test baseline gravity'}
+            {isDyslexicPreview ? 'Bottom-weighted glyphs active' : 'Click to test letter weight'}
           </span>
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
             Synchronized Speech
           </h3>
           <p className="text-xs leading-relaxed mb-3" style={{ color: theme.secondaryText }}>
-            Browser text-to-speech with live sentence-by-sentence visual highlighting.
+            Listen to text read aloud with synchronized paragraph highlighting.
           </p>
         </div>
 

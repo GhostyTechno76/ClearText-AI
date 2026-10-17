@@ -98,7 +98,7 @@ export default function Toolbar({
         <div className="flex items-center gap-2">
           <Sliders size={15} style={{ color: theme.accent }} />
           <h3 className="text-xs font-extrabold uppercase tracking-widest" style={{ color: theme.text }}>
-            Tactile Studio
+            Reading Settings
           </h3>
         </div>
         <div className="flex items-center gap-2">
@@ -130,9 +130,9 @@ export default function Toolbar({
       {/* Font Family Selector */}
       <div className="space-y-2">
         <label className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
-          <span>Font Architecture</span>
+          <span>Font</span>
           <span className="text-[10px] font-mono opacity-70">
-            {settings.fontFamily === 'dyslexic' ? 'Weighted Baselines' : 'Neutral Aperture'}
+            {settings.fontFamily === 'dyslexic' ? 'OpenDyslexic' : 'Standard Sans'}
           </span>
         </label>
         <div className="flex gap-2">
@@ -180,9 +180,9 @@ export default function Toolbar({
             <Eye size={14} aria-hidden="true" />
           </div>
           <div>
-            <span>Bionic Fixation</span>
+            <span>Bionic Reading</span>
             <span className="block text-[10px] font-normal opacity-70" style={{ color: theme.secondaryText }}>
-              Saccadic word anchors
+              Bolds the start of words
             </span>
           </div>
         </label>
@@ -215,9 +215,9 @@ export default function Toolbar({
             <Compass size={14} aria-hidden="true" />
           </div>
           <div>
-            <span>Reading Ruler</span>
+            <span>Reading Guide</span>
             <span className="block text-[10px] font-normal opacity-70" style={{ color: theme.secondaryText }}>
-              Cursor focus spotlight
+              Focus bar follows cursor
             </span>
           </div>
         </label>
@@ -241,7 +241,7 @@ export default function Toolbar({
         <div className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
           <span className="flex items-center gap-1.5">
             <BookOpen size={14} aria-hidden="true" />
-            <span>Font Scale</span>
+            <span>Text Size</span>
           </span>
           <span className="font-mono px-2 py-0.5 rounded-full border text-[11px]" style={{ borderColor: theme.border, color: theme.text }}>
             {settings.fontSize}px
@@ -296,7 +296,7 @@ export default function Toolbar({
       {/* Line Height Slider with Floating Pill Tooltip */}
       <div className="space-y-2 relative">
         <div className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
-          <span>Line Stride (Leading)</span>
+          <span>Line Spacing</span>
           <span className="font-mono px-2 py-0.5 rounded-full border text-[11px]" style={{ borderColor: theme.border, color: theme.text }}>
             {settings.lineHeight.toFixed(1)}x
           </span>
@@ -332,7 +332,7 @@ export default function Toolbar({
       {/* Letter Spacing Slider with Floating Pill Tooltip */}
       <div className="space-y-2 relative">
         <div className="text-xs font-bold flex items-center justify-between" style={{ color: theme.secondaryText }}>
-          <span>Letter Tracking</span>
+          <span>Letter Spacing</span>
           <span className="font-mono px-2 py-0.5 rounded-full border text-[11px]" style={{ borderColor: theme.border, color: theme.text }}>
             {settings.letterSpacing.toFixed(2)}em
           </span>
@@ -368,7 +368,7 @@ export default function Toolbar({
       {/* Tactile Theme Selector */}
       <div className="space-y-2">
         <label className="text-xs font-bold" style={{ color: theme.secondaryText }}>
-          Sensory Atmosphere
+          Color Theme
         </label>
         <div className="grid grid-cols-2 gap-2">
           {(Object.keys(themes) as ThemeKey[]).map((key) => {

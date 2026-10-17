@@ -6,11 +6,9 @@ import {
   ListChecks,
   Loader2,
   BookOpenCheck,
-  Zap,
   ArrowLeft,
   RefreshCw,
   Columns,
-  Eye,
   Sliders,
 } from 'lucide-react';
 import InputSection from '@/components/InputSection';
@@ -159,19 +157,18 @@ export default function Home() {
                   ClearText<span style={{ color: theme.accent }}>.ai</span>
                 </span>
                 <span
-                  className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full border shadow-sm uppercase tracking-wider"
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full border shadow-sm"
                   style={{
                     borderColor: theme.border,
                     backgroundColor: theme.highlightBg,
                     color: theme.accent,
                   }}
                 >
-                  <Sparkles size={10} aria-hidden="true" />
-                  WCAG AAA
+                  Reader Workspace
                 </span>
               </div>
-              <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: theme.secondaryText }}>
-                Living Canvas &bull; Tactile Studio
+              <p className="text-[11px] font-medium tracking-wide" style={{ color: theme.secondaryText }}>
+                Accessible Reading Tools
               </p>
             </div>
           </button>
@@ -228,15 +225,15 @@ export default function Home() {
             <div className="lg:col-span-7 flex flex-col text-left items-start order-1 w-full">
               {/* Top Accessibility Tagline */}
               <div
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-4 border shadow-sm transition-all"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold mb-4 border shadow-sm transition-all"
                 style={{
                   backgroundColor: theme.highlightBg,
                   borderColor: theme.border,
                   color: theme.accent,
                 }}
               >
-                <Zap size={13} aria-hidden="true" className="animate-pulse" />
-                Empowering Neurodivergent &amp; Dyslexic Readers Everywhere
+                <BookOpenCheck size={13} aria-hidden="true" />
+                Adjust typography, layout, and language to suit how you read
               </div>
 
               {/* Master Headline */}
@@ -244,12 +241,12 @@ export default function Home() {
                 className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.12] mb-4"
                 style={{ color: theme.text }}
               >
-                Read anything with{' '}
+                Read web articles and text with{' '}
                 <span
                   className="underline decoration-wavy decoration-2 transition-colors duration-300"
                   style={{ color: theme.accent, textDecorationColor: theme.accent }}
                 >
-                  crystal clarity
+                  less distraction
                 </span>
                 .
               </h1>
@@ -259,7 +256,7 @@ export default function Home() {
                 className="text-base sm:text-lg mb-6 leading-relaxed font-normal max-w-2xl"
                 style={{ color: theme.secondaryText }}
               >
-                Transform dense articles, paywall-free web pages, and raw text into a clean, distraction-free sanctuary with instant 5th-grade AI simplification, bionic eye anchors, and live synchronized speech.
+                Customize typography, line spacing, and color themes. Use text-to-speech, reading guides, or optional plain-language simplification to read comfortably.
               </p>
 
               {/* Unified Glassmorphic Input Capsule - Immediately Visible Above the Fold */}
@@ -292,10 +289,10 @@ export default function Home() {
           <div className="text-center mb-8">
             <Loader2 className="animate-spin mx-auto mb-3" size={36} style={{ color: theme.accent }} />
             <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: theme.text }}>
-              Refracting &amp; Clarifying Content...
+              Loading article...
             </h2>
             <p className="text-xs sm:text-sm mt-1" style={{ color: theme.secondaryText }}>
-              Stripping ads, clutter, and distractions while assembling your tactile reading canvas.
+              Extracting main text and removing page clutter.
             </p>
           </div>
           <LoadingSkeleton theme={theme} />
@@ -312,7 +309,7 @@ export default function Home() {
           >
             <div className="flex items-center gap-2.5">
               <span className="font-extrabold uppercase tracking-widest text-[10px]" style={{ color: theme.secondaryText }}>
-                Reading Sanctuary:
+                Reading:
               </span>
               <span className="font-bold truncate max-w-xs sm:max-w-md text-sm" style={{ color: theme.text }}>
                 {article.title}
@@ -376,7 +373,7 @@ export default function Home() {
                 aria-label="AI reading tools"
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Simplify 5th-Grade Button */}
+                  {/* Simplify Button */}
                   <button
                     onClick={() => handleAI('simplify')}
                     disabled={aiLoading}
@@ -386,30 +383,30 @@ export default function Home() {
                       color: theme.buttonText,
                       boxShadow: `0 4px 12px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
                     }}
-                    title="Translate vocabulary and sentence complexity to 5th-grade level"
+                    title="Rewrite text in plain, direct language"
                   >
                     {aiLoading && aiMode === 'simplify' ? (
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                     ) : (
                       <Sparkles size={16} aria-hidden="true" />
                     )}
-                    <span>Simplify (5th-Grade)</span>
+                    <span>Simplify Text</span>
                   </button>
 
-                  {/* Key Bullets Button */}
+                  {/* Key Takeaways Button */}
                   <button
                     onClick={() => handleAI('summarize')}
                     disabled={aiLoading}
                     className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold border transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
                     style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
-                    title="Extract essential takeaways into clean, styled callout cards"
+                    title="Extract key takeaways into bullet points"
                   >
                     {aiLoading && aiMode === 'summarize' ? (
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                     ) : (
                       <ListChecks size={16} aria-hidden="true" />
                     )}
-                    <span>Key Bullets</span>
+                    <span>Key Takeaways</span>
                   </button>
                 </div>
 
@@ -510,11 +507,11 @@ export default function Home() {
                   <div>
                     <div className="flex items-center gap-1.5 mb-2 text-xs font-bold tracking-wider uppercase" style={{ color: theme.accent }}>
                       <Sparkles size={13} />
-                      <span>AI Simplified (5th-Grade)</span>
+                      <span>{aiMode === 'summarize' ? 'Key Takeaways' : 'Simplified Text'}</span>
                     </div>
                     <ReaderCanvas
-                      title="AI Simplified Reading"
-                      siteName="ClearText AI Lens"
+                      title={aiMode === 'summarize' ? 'Article Takeaways' : 'Simplified Reading'}
+                      siteName="ClearText Plain View"
                       textContent={aiResult}
                       settings={settings}
                       theme={theme}
@@ -545,14 +542,12 @@ export default function Home() {
       <footer className="border-t mt-auto py-8 transition-colors duration-300" style={{ borderColor: theme.border }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <p style={{ color: theme.secondaryText }}>
-            &copy; 2026 ClearText AI &bull; Thoughtful sensory reading sanctuary for neurodivergent minds.
+            &copy; 2026 ClearText AI &bull; A customizable, distraction-free reading workspace.
           </p>
           <div className="flex items-center gap-4 font-semibold" style={{ color: theme.secondaryText }}>
-            <span>WCAG 2.1 AAA</span>
+            <span>Accessible Typography</span>
             <span className="opacity-40">&bull;</span>
             <span>OpenDyslexic</span>
-            <span className="opacity-40">&bull;</span>
-            <span>Spline 3D</span>
             <span className="opacity-40">&bull;</span>
             <span>Web Speech API</span>
             <span className="opacity-40">&bull;</span>
