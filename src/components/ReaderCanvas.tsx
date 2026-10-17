@@ -148,7 +148,7 @@ export default function ReaderCanvas({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
               title="Copy text to clipboard"
             >
@@ -157,7 +157,7 @@ export default function ReaderCanvas({
             </button>
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
               title="Print or save as PDF"
             >
@@ -233,8 +233,8 @@ export default function ReaderCanvas({
                 key={idx}
                 ref={isActive ? activeParagraphRef : null}
                 onClick={() => onParagraphClick?.(idx)}
-                className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer shadow-sm group ${
-                  isActive ? 'ring-2 ring-offset-2 scale-[1.01]' : 'hover:scale-[1.005]'
+                className={`p-4 rounded-2xl border transition-colors duration-150 cursor-pointer shadow-sm group ${
+                  isActive ? 'ring-2 ring-offset-2' : 'hover:border-opacity-80'
                 }`}
                 style={{
                   backgroundColor: isActive ? theme.highlightBg : theme.inputBg,
@@ -271,15 +271,15 @@ export default function ReaderCanvas({
               key={idx}
               ref={isActive ? activeParagraphRef : null}
               onClick={() => onParagraphClick?.(idx)}
-              className={`group relative rounded-2xl transition-all duration-200 cursor-pointer p-4 -mx-4 ${
+              className={`group relative rounded-2xl transition-colors duration-150 cursor-pointer p-4 -mx-4 ${
                 isActive
-                  ? 'border-l-4 shadow-md backdrop-blur-md'
+                  ? 'border-l-4 shadow-sm'
                   : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02] border-l-4 border-transparent'
               }`}
               style={{
                 backgroundColor: isActive ? theme.highlightBg : 'transparent',
                 borderLeftColor: isActive ? theme.accent : 'transparent',
-                boxShadow: isActive ? `0 4px 16px ${theme.glowColor || 'rgba(0,0,0,0.05)'}` : 'none',
+                boxShadow: isActive ? `0 2px 8px ${theme.glowColor || 'rgba(0,0,0,0.05)'}` : 'none',
               }}
               role="button"
               tabIndex={0}
@@ -293,7 +293,7 @@ export default function ReaderCanvas({
             >
               {isActive && (
                 <div className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider mb-2" style={{ color: theme.accent }}>
-                  <Volume2 size={12} className="animate-pulse" />
+                  <Volume2 size={12} />
                   <span>Actively Reading</span>
                 </div>
               )}

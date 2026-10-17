@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Sparkles, Eye, Pause, Play } from 'lucide-react';
+import { Eye, Pause, Play } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import SplineErrorBoundary from '@/components/SplineErrorBoundary';
 
@@ -15,18 +15,9 @@ const InteractiveColorBlob = dynamic(() => import('@/components/InteractiveColor
 function SplineFallbackLoading() {
   return (
     <div className="w-full h-full flex items-center justify-center relative select-none pointer-events-none">
-      <div className="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
-        {/* Pulsating blurred chromatic ambient circles */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/25 via-indigo-500/20 to-slate-400/20 blur-2xl animate-pulse" />
-        <div
-          className="absolute -inset-3 rounded-full bg-gradient-to-br from-cyan-400/20 via-slate-400/15 to-indigo-300/15 blur-xl animate-pulse"
-          style={{ animationDuration: '3s' }}
-        />
-        <div
-          className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full backdrop-blur-xl bg-white/10 dark:bg-white/5 border border-white/20 shadow-2xl flex items-center justify-center animate-spin"
-          style={{ animationDuration: '14s' }}
-        >
-          <Sparkles className="w-6 h-6 text-sky-400/90 animate-pulse" />
+      <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
+        <div className="w-28 h-28 rounded-full border p-4 shadow-sm flex items-center justify-center bg-black/[0.02] dark:bg-white/[0.02] border-black/10 dark:border-white/10">
+          <Eye size={24} className="opacity-40" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -111,7 +102,7 @@ export default function SplineHeroPrism({ theme }: SplineHeroProps) {
       <button
         type="button"
         onClick={() => setIsPaused((prev) => !prev)}
-        className="absolute bottom-1 right-2 sm:bottom-3 sm:right-3 z-20 pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md border transition-all duration-200 hover:scale-[1.03] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+        className="absolute bottom-1 right-2 sm:bottom-3 sm:right-3 z-20 pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md border transition-opacity duration-200 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
         style={{
           backgroundColor: isPaused ? theme.card : `${theme.card}cc`,
           borderColor: isPaused ? theme.accent : theme.border,

@@ -168,7 +168,7 @@ export default function AudioPlayer({
         boxShadow: `0 8px 30px -4px ${theme.glowColor || 'rgba(0,0,0,0.06)'}`,
       }}
       role="region"
-      aria-label="Ambient audio read-aloud player"
+      aria-label="Read-aloud player"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Playback Transport Buttons */}
@@ -177,11 +177,11 @@ export default function AudioPlayer({
           <button
             onClick={isPlaying ? pause : play}
             aria-label={isPlaying ? 'Pause reading aloud' : 'Start reading aloud'}
-            className="w-10 h-10 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 shadow-md flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-2xl transition-all duration-150 hover:opacity-90 shadow-md flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               backgroundColor: theme.buttonBg,
               color: theme.buttonText,
-              boxShadow: `0 4px 14px ${theme.glowColor || 'rgba(0,0,0,0.15)'}`,
+              boxShadow: `0 2px 8px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
             }}
             title={isPlaying ? 'Pause (Space)' : 'Play reading aloud'}
           >
@@ -193,7 +193,7 @@ export default function AudioPlayer({
             onClick={stop}
             disabled={!isPlaying && !isPaused && currentIndexRef.current === -1}
             aria-label="Stop reading"
-            className="w-9 h-9 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="w-9 h-9 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: theme.border, color: theme.text }}
             title="Stop reading"
           >
@@ -206,7 +206,7 @@ export default function AudioPlayer({
               onClick={prevParagraph}
               disabled={!isPlaying && !isPaused}
               aria-label="Previous section"
-              className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="p-2 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: theme.border, color: theme.text }}
               title="Previous section"
             >
@@ -216,7 +216,7 @@ export default function AudioPlayer({
               onClick={nextParagraph}
               disabled={!isPlaying && !isPaused}
               aria-label="Next section"
-              className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="p-2 rounded-xl border transition-all hover:opacity-80 disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: theme.border, color: theme.text }}
               title="Next section"
             >
@@ -230,10 +230,10 @@ export default function AudioPlayer({
           <div className="flex items-center gap-1">
             <Volume2 size={13} style={{ color: theme.accent }} />
             {isPlaying && (
-              <span className="flex items-end gap-0.5 h-3">
-                <span className="w-0.5 h-3 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '0ms' }} />
-                <span className="w-0.5 h-2 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '150ms' }} />
-                <span className="w-0.5 h-3 bg-current rounded-full animate-bounce" style={{ color: theme.accent, animationDelay: '300ms' }} />
+              <span className="flex items-end gap-0.5 h-3 opacity-80" aria-hidden="true">
+                <span className="w-0.5 h-2.5 rounded-full" style={{ backgroundColor: theme.accent }} />
+                <span className="w-0.5 h-3.5 rounded-full" style={{ backgroundColor: theme.accent }} />
+                <span className="w-0.5 h-2 rounded-full" style={{ backgroundColor: theme.accent }} />
               </span>
             )}
           </div>
@@ -242,7 +242,7 @@ export default function AudioPlayer({
               ? `Reading Section ${currentNum} of ${totalParagraphs}`
               : isPaused
               ? `Paused at Section ${currentNum}`
-              : 'Ambient Read-Aloud Ready'}
+              : 'Read-aloud ready'}
           </span>
         </div>
 

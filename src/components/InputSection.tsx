@@ -164,7 +164,7 @@ export default function InputSection({
                 onClick={handleUrlSubmit}
                 disabled={loading}
                 aria-label="Extract article content"
-                className="px-6 py-3.5 rounded-2xl text-sm font-bold transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md whitespace-nowrap"
+                className="px-6 py-3.5 rounded-2xl text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md whitespace-nowrap"
                 style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
               >
                 {loading ? (
@@ -198,7 +198,7 @@ export default function InputSection({
               <button
                 onClick={handleTextSubmit}
                 aria-label="Load pasted text into reader"
-                className="px-6 py-3 rounded-2xl text-sm font-bold transition-all hover:opacity-90 active:scale-95 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md"
+                className="px-6 py-3 rounded-2xl text-sm font-bold transition-opacity hover:opacity-90 flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md"
                 style={{ backgroundColor: theme.buttonBg, color: theme.buttonText }}
               >
                 <FileText size={16} aria-hidden="true" />
@@ -228,7 +228,7 @@ export default function InputSection({
                 });
               }}
               type="button"
-              className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
+              className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-opacity duration-150 hover:opacity-80 shadow-sm"
               style={{
                 backgroundColor: theme.card,
                 borderColor: theme.border,

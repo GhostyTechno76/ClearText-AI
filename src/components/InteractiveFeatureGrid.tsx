@@ -57,7 +57,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-transform group-hover:scale-105"
+              className="p-2.5 rounded-xl transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Eye size={18} aria-hidden="true" />
@@ -110,7 +110,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-transform group-hover:scale-105"
+              className="p-2.5 rounded-xl transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Sparkles size={18} aria-hidden="true" />
@@ -158,7 +158,7 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-transform group-hover:scale-105"
+              className="p-2.5 rounded-xl transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Shield size={18} aria-hidden="true" />
@@ -218,16 +218,16 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         <div>
           <div className="flex items-center justify-between mb-3.5">
             <div
-              className="p-2.5 rounded-xl transition-transform group-hover:scale-105"
+              className="p-2.5 rounded-xl transition-colors"
               style={{ backgroundColor: theme.highlightBg, color: theme.accent }}
             >
               <Volume2 size={18} aria-hidden="true" />
             </div>
-            {/* Equalizer bars */}
-            <div className="flex items-end gap-0.5 h-4">
-              <span className={`w-1 bg-current rounded-full transition-all ${audioTesting ? 'h-4 animate-pulse' : 'h-1.5'}`} style={{ color: theme.accent }} />
-              <span className={`w-1 bg-current rounded-full transition-all ${audioTesting ? 'h-3 animate-bounce' : 'h-2.5'}`} style={{ color: theme.accent, animationDelay: '100ms' }} />
-              <span className={`w-1 bg-current rounded-full transition-all ${audioTesting ? 'h-5 animate-pulse' : 'h-2'}`} style={{ color: theme.accent, animationDelay: '200ms' }} />
+            {/* Audio state indicator */}
+            <div className="flex items-end gap-0.5 h-4 opacity-75" aria-hidden="true">
+              <span className={`w-1 rounded-full transition-all duration-300 ${audioTesting ? 'h-3.5' : 'h-1.5'}`} style={{ backgroundColor: theme.accent }} />
+              <span className={`w-1 rounded-full transition-all duration-300 ${audioTesting ? 'h-4' : 'h-2.5'}`} style={{ backgroundColor: theme.accent }} />
+              <span className={`w-1 rounded-full transition-all duration-300 ${audioTesting ? 'h-2' : 'h-1.5'}`} style={{ backgroundColor: theme.accent }} />
             </div>
           </div>
           <h3 className="text-sm font-bold mb-1.5" style={{ color: theme.text }}>
@@ -241,14 +241,14 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
         {/* Mini interactive play button */}
         <button
           onClick={handleTestAudio}
-          className="w-full py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 hover:opacity-90 active:scale-95"
+          className="w-full py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 hover:opacity-90"
           style={{
             backgroundColor: audioTesting ? theme.accent : theme.inputBg,
             color: audioTesting ? theme.accentText : theme.text,
             borderColor: theme.border,
           }}
         >
-          <Volume2 size={13} className={audioTesting ? 'animate-spin' : ''} />
+          <Volume2 size={13} />
           {audioTesting ? 'Speaking Demo...' : 'Listen to Live Sample'}
         </button>
       </div>

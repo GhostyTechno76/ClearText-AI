@@ -31,8 +31,8 @@ export const themes: Record<ThemeKey, ThemeConfig> = {
     buttonText: '#FFFFFF',
     inputBg: '#F3EFEA',
     highlightBg: '#EBF3FE',
-    glowColor: 'rgba(37, 99, 235, 0.15)',
-    glassBackdrop: 'rgba(255, 255, 255, 0.85)',
+    glowColor: 'rgba(0, 0, 0, 0.04)',
+    glassBackdrop: 'rgba(250, 248, 245, 0.96)',
   },
   dark: {
     name: 'Warm Obsidian',
@@ -47,8 +47,8 @@ export const themes: Record<ThemeKey, ThemeConfig> = {
     buttonText: '#090D16',
     inputBg: '#16181C',
     highlightBg: '#1E293B',
-    glowColor: 'rgba(56, 189, 248, 0.18)',
-    glassBackdrop: 'rgba(26, 28, 32, 0.85)',
+    glowColor: 'rgba(0, 0, 0, 0.25)',
+    glassBackdrop: 'rgba(18, 19, 22, 0.96)',
   },
   'high-contrast': {
     name: 'OLED Contrast',
@@ -63,8 +63,8 @@ export const themes: Record<ThemeKey, ThemeConfig> = {
     buttonText: '#000000',
     inputBg: '#111111',
     highlightBg: '#1F1E05',
-    glowColor: 'rgba(250, 204, 21, 0.25)',
-    glassBackdrop: 'rgba(10, 10, 10, 0.95)',
+    glowColor: 'transparent',
+    glassBackdrop: '#000000',
   },
   sepia: {
     name: 'Restorative Sepia',
@@ -79,8 +79,8 @@ export const themes: Record<ThemeKey, ThemeConfig> = {
     buttonText: '#FFFFFF',
     inputBg: '#EFE5CE',
     highlightBg: '#EFE2C6',
-    glowColor: 'rgba(139, 90, 43, 0.18)',
-    glassBackdrop: 'rgba(251, 245, 232, 0.88)',
+    glowColor: 'rgba(60, 50, 38, 0.05)',
+    glassBackdrop: 'rgba(246, 238, 219, 0.96)',
   },
 };
 

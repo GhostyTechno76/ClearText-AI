@@ -137,16 +137,15 @@ export default function Home() {
           {/* Logo & Brand (Clickable to return Home) */}
           <button
             onClick={handleResetHome}
-            className="flex items-center gap-3 text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 rounded-2xl p-1.5 -m-1.5 transition-transform hover:scale-[1.01]"
+            className="flex items-center gap-3 text-left group cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 rounded-2xl p-1.5 -m-1.5 transition-opacity hover:opacity-90"
             aria-label="ClearText AI - Click to return Home"
             title="Click to go back to Home"
           >
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-md transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
+              className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shadow-sm transition-colors"
               style={{
                 backgroundColor: theme.accent,
                 color: theme.accentText,
-                boxShadow: `0 4px 14px ${theme.glowColor || 'rgba(0,0,0,0.1)'}`,
               }}
             >
               CT
@@ -178,7 +177,7 @@ export default function Home() {
             {article && (
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
                 style={{
                   borderColor: theme.border,
                   backgroundColor: isSidebarOpen ? theme.highlightBg : theme.card,
@@ -194,7 +193,7 @@ export default function Home() {
             {article && (
               <button
                 onClick={handleResetHome}
-                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
                 style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
                 title="Go back to hero input"
               >
@@ -207,7 +206,7 @@ export default function Home() {
               href="https://github.com/GhostyTechno76/ClearText-AI"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
               style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.card }}
             >
               GitHub
@@ -377,7 +376,7 @@ export default function Home() {
                   <button
                     onClick={() => handleAI('simplify')}
                     disabled={aiLoading}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md relative overflow-hidden"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-opacity hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-md relative overflow-hidden"
                     style={{
                       backgroundColor: theme.buttonBg,
                       color: theme.buttonText,
@@ -397,7 +396,7 @@ export default function Home() {
                   <button
                     onClick={() => handleAI('summarize')}
                     disabled={aiLoading}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold border transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold border transition-colors hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 shadow-sm"
                     style={{ borderColor: theme.border, color: theme.text, backgroundColor: theme.inputBg }}
                     title="Extract key takeaways into bullet points"
                   >

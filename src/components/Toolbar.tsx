@@ -31,7 +31,6 @@ export default function Toolbar({
   isOpen = true,
   onToggleOpen,
 }: ToolbarProps) {
-  const [resetRotating, setResetRotating] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   const update = (partial: Partial<ReaderSettings>) => {
@@ -39,8 +38,6 @@ export default function Toolbar({
   };
 
   const handleReset = () => {
-    setResetRotating(true);
-    setTimeout(() => setResetRotating(false), 500);
     onSettingsChange({
       fontSize: 18,
       lineHeight: 1.8,
@@ -63,7 +60,7 @@ export default function Toolbar({
     return (
       <button
         onClick={onToggleOpen}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full border shadow-xl backdrop-blur-md transition-all hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full border shadow-lg backdrop-blur-md transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
           backgroundColor: theme.card,
           borderColor: theme.border,
@@ -93,7 +90,7 @@ export default function Toolbar({
       role="toolbar"
       aria-label="Reader customization controls"
     >
-      {/* Header with Title and Animated Reset */}
+      {/* Header with Title and Reset */}
       <div className="flex items-center justify-between pb-2 border-b" style={{ borderColor: theme.border }}>
         <div className="flex items-center gap-2">
           <Sliders size={15} style={{ color: theme.accent }} />
@@ -104,14 +101,11 @@ export default function Toolbar({
         <div className="flex items-center gap-2">
           <button
             onClick={handleReset}
-            className="flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg border transition-all hover:opacity-80 active:scale-95"
+            className="flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg border transition-opacity hover:opacity-80"
             style={{ borderColor: theme.border, color: theme.secondaryText }}
             title="Reset typography settings to default"
           >
-            <RotateCcw
-              size={12}
-              className={`transition-transform duration-500 ${resetRotating ? '-rotate-180' : ''}`}
-            />
+            <RotateCcw size={12} />
             <span>Reset</span>
           </button>
           {onToggleOpen && (
@@ -251,7 +245,7 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontSize: Math.max(14, settings.fontSize - 1) })}
             aria-label="Decrease font size"
-            className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="p-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: theme.border, color: theme.text }}
           >
             <Minus size={12} />
@@ -285,7 +279,7 @@ export default function Toolbar({
           <button
             onClick={() => update({ fontSize: Math.min(36, settings.fontSize + 1) })}
             aria-label="Increase font size"
-            className="p-2 rounded-xl border transition-all hover:opacity-80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="p-2 rounded-xl border transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: theme.border, color: theme.text }}
           >
             <Plus size={12} />
@@ -379,12 +373,12 @@ export default function Toolbar({
                 onClick={() => update({ theme: key })}
                 aria-pressed={isSelected}
                 aria-label={`${themes[key].name} theme`}
-                className="flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-bold border transition-all duration-150 hover:scale-[1.02] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-bold border transition-opacity duration-150 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
                   backgroundColor: isSelected ? theme.accent : 'transparent',
                   color: isSelected ? theme.accentText : theme.text,
                   borderColor: isSelected ? theme.accent : theme.border,
-                  boxShadow: isSelected ? `0 4px 12px ${theme.glowColor || 'rgba(0,0,0,0.1)'}` : 'none',
+                  boxShadow: isSelected ? `0 2px 8px ${theme.glowColor || 'rgba(0,0,0,0.1)'}` : 'none',
                 }}
               >
                 {themeIcons[key]}
