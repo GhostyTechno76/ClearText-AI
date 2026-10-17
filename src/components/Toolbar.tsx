@@ -269,8 +269,12 @@ export default function Toolbar({
               value={settings.fontSize}
               onMouseEnter={() => setActiveTooltip('fontSize')}
               onMouseLeave={() => setActiveTooltip(null)}
+              onFocus={() => setActiveTooltip('fontSize')}
+              onBlur={() => setActiveTooltip(null)}
               onChange={(e) => update({ fontSize: Number(e.target.value) })}
               aria-label="Font size slider"
+              aria-valuenow={settings.fontSize}
+              aria-valuetext={`${settings.fontSize} pixels`}
               className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
             />
           </div>
@@ -323,8 +327,12 @@ export default function Toolbar({
               value={settings.lineHeight}
               onMouseEnter={() => setActiveTooltip('lineHeight')}
               onMouseLeave={() => setActiveTooltip(null)}
+              onFocus={() => setActiveTooltip('lineHeight')}
+              onBlur={() => setActiveTooltip(null)}
               onChange={(e) => update({ lineHeight: Number(e.target.value) })}
               aria-label="Line spacing slider"
+              aria-valuenow={settings.lineHeight}
+              aria-valuetext={`${settings.lineHeight.toFixed(1)} times line height`}
               className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
             />
           </div>
@@ -377,8 +385,12 @@ export default function Toolbar({
               value={settings.letterSpacing}
               onMouseEnter={() => setActiveTooltip('letterSpacing')}
               onMouseLeave={() => setActiveTooltip(null)}
+              onFocus={() => setActiveTooltip('letterSpacing')}
+              onBlur={() => setActiveTooltip(null)}
               onChange={(e) => update({ letterSpacing: Number(e.target.value) })}
               aria-label="Letter spacing slider"
+              aria-valuenow={settings.letterSpacing}
+              aria-valuetext={`${settings.letterSpacing.toFixed(2)} ems`}
               className="w-full accent-blue-600 h-2 rounded-lg cursor-pointer bg-black/10 dark:bg-white/10"
             />
           </div>
