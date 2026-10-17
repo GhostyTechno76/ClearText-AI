@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Eye, Sparkles, Shield, Volume2, ArrowRight } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { bionicParagraph } from '@/lib/bionic';
@@ -21,27 +21,84 @@ export default function InteractiveFeatureGrid({ theme }: InteractiveFeatureGrid
 
   // 4. Audio preview state
   const [audioTesting, setAudioTesting] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sampleBionicSentence = "Saccadic fixation guides your eyes effortlessly across complex text.";
   const academicText = "The prefrontal cortex regulates executive cognitive functioning and inhibitory control.";
   const simpleText = "The front part of your brain helps you plan things and make thoughtful choices.";
 
   const handleTestAudio = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      if (audioTesting) {
-        window.speechSynthesis.cancel();
-        setAudioTesting(false);
-        return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (audioTesting) {
+      if (utteranceRef.current) {
+        utteranceRef.current.onend = null;
+        utteranceRef.current.onerror = null;
+        utteranceRef.current = null;
       }
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance("ClearText reads aloud with live synchronization.");
-      utterance.rate = 1.0;
-      utterance.onend = () => setAudioTesting(false);
-      utterance.onerror = () => setAudioTesting(false);
-      window.speechSynthesis.speak(utterance);
-      setAudioTesting(true);
+      setAudioTesting(false);
+      return;
     }
+
+    if (utteranceRef.current) {
+      utteranceRef.current.onend = null;
+      utteranceRef.current.onerror = null;
+      utteranceRef.current = null;
+    }
+
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    window.speechSynthesis.cancel();
+    setAudioTesting(true);
+
+    timerRef.current = setTimeout(() => {
+      try {
+        const utterance = new SpeechSynthesisUtterance("ClearText reads aloud with live synchronization.");
+        utterance.rate = 1.0;
+        utterance.lang = 'en-US';
+
+        utterance.onend = () => {
+          utteranceRef.current = null;
+          setAudioTesting(false);
+        };
+        utterance.onerror = (e) => {
+          if (e.error === 'canceled' || e.error === 'interrupted') return;
+          utteranceRef.current = null;
+          setAudioTesting(false);
+        };
+
+        utteranceRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      } catch {
+        setAudioTesting(false);
+      }
+    }, 50);
   };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (utteranceRef.current) {
+          utteranceRef.current.onend = null;
+          utteranceRef.current.onerror = null;
+        }
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-16 text-left">

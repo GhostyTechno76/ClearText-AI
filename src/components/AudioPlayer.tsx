@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Play, Pause, Square, Gauge, SkipForward, SkipBack, Volume2 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/themes';
 import { splitIntoParagraphs } from '@/lib/bionic';
@@ -32,22 +32,61 @@ export default function AudioPlayer({
   }, [isPlaying, onPlayingChange]);
 
   const rates = [0.75, 1, 1.25, 1.5];
-  const paragraphsRef = useRef<string[]>([]);
+
+  // Synchronously compute paragraphs
+  const paragraphs = useMemo(() => splitIntoParagraphs(text), [text]);
+  const paragraphsRef = useRef<string[]>(paragraphs);
+  paragraphsRef.current = paragraphs;
+
   const currentIndexRef = useRef<number>(-1);
   const rateRef = useRef<number>(rate);
   rateRef.current = rate;
 
+  // Utterance ref to prevent Chromium garbage collection
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const speakTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+  const prevPlayRequestIdRef = useRef<number | undefined>(playRequestId);
+
   useEffect(() => {
-    setSupported(typeof window !== 'undefined' && 'speechSynthesis' in window);
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setSupported(false);
+      return;
+    }
+    setSupported(true);
+
+    const updateVoices = () => {
+      try {
+        const available = window.speechSynthesis.getVoices();
+        if (available && available.length > 0) {
+          voicesRef.current = available;
+        }
+      } catch {
+        // Safe fallback
+      }
+    };
+
+    updateVoices();
+    window.speechSynthesis.onvoiceschanged = updateVoices;
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
   }, []);
 
-  // Update paragraphs list when text changes
-  useEffect(() => {
-    paragraphsRef.current = splitIntoParagraphs(text);
-  }, [text]);
-
   const stop = useCallback(() => {
+    if (speakTimerRef.current) {
+      clearTimeout(speakTimerRef.current);
+      speakTimerRef.current = null;
+    }
+
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      if (utteranceRef.current) {
+        utteranceRef.current.onend = null;
+        utteranceRef.current.onerror = null;
+        utteranceRef.current = null;
+      }
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
@@ -59,60 +98,150 @@ export default function AudioPlayer({
   const speakParagraph = useCallback(
     (index: number) => {
       if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-      const paragraphs = paragraphsRef.current;
-      if (index < 0 || index >= paragraphs.length) {
+      const currentParagraphs = paragraphsRef.current;
+      if (index < 0 || index >= currentParagraphs.length) {
         stop();
         return;
       }
 
+      if (speakTimerRef.current) {
+        clearTimeout(speakTimerRef.current);
+        speakTimerRef.current = null;
+      }
+
+      // Detach listeners from any previous utterance so cancellation doesn't trigger error cascades
+      if (utteranceRef.current) {
+        utteranceRef.current.onend = null;
+        utteranceRef.current.onerror = null;
+        utteranceRef.current = null;
+      }
+
+      // Resume if engine was paused, then cancel to flush previous audio queue
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
       window.speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(paragraphs[index]);
-      utterance.rate = rateRef.current;
-      utterance.pitch = 1;
-      utterance.lang = 'en-US';
+      // Clean leading bullet marks or numbers so speech sounds natural
+      const rawText = currentParagraphs[index];
+      const speechText = rawText.replace(/^[•\-\*]\s+/, '').replace(/^\d+\.\s+/, '').trim();
+      if (!speechText) {
+        if (index + 1 < currentParagraphs.length) {
+          speakParagraph(index + 1);
+        } else {
+          stop();
+        }
+        return;
+      }
 
       currentIndexRef.current = index;
       onActiveParagraphChange(index);
-
-      utterance.onend = () => {
-        if (currentIndexRef.current === index) {
-          if (index + 1 < paragraphs.length) {
-            speakParagraph(index + 1);
-          } else {
-            stop();
-          }
-        }
-      };
-
-      utterance.onerror = () => {
-        stop();
-      };
-
-      window.speechSynthesis.speak(utterance);
       setIsPlaying(true);
       setIsPaused(false);
+
+      // 50ms tick to let Chromium reset its audio thread after cancel()
+      speakTimerRef.current = setTimeout(() => {
+        try {
+          const utterance = new SpeechSynthesisUtterance(speechText);
+          utterance.rate = rateRef.current;
+          utterance.pitch = 1.0;
+          utterance.lang = 'en-US';
+
+          // Assign preferred voice if available
+          if (voicesRef.current.length > 0) {
+            const preferredVoice =
+              voicesRef.current.find(
+                (v) =>
+                  v.lang.startsWith('en') &&
+                  (v.name.includes('Natural') ||
+                    v.name.includes('Google') ||
+                    v.name.includes('Microsoft') ||
+                    v.default)
+              ) ||
+              voicesRef.current.find((v) => v.lang.startsWith('en')) ||
+              voicesRef.current[0];
+            if (preferredVoice) {
+              utterance.voice = preferredVoice;
+            }
+          }
+
+          utterance.onend = () => {
+            utteranceRef.current = null;
+            if (currentIndexRef.current === index) {
+              if (index + 1 < paragraphsRef.current.length) {
+                speakParagraph(index + 1);
+              } else {
+                stop();
+              }
+            }
+          };
+
+          utterance.onerror = (e) => {
+            // Ignore intentional cancellations or interruptions
+            if (e.error === 'canceled' || e.error === 'interrupted') {
+              return;
+            }
+            console.warn('SpeechSynthesis error:', e.error);
+            utteranceRef.current = null;
+            stop();
+          };
+
+          utteranceRef.current = utterance;
+          window.speechSynthesis.speak(utterance);
+
+          // Workaround for Chrome bug where paused state gets stuck
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+        } catch (err) {
+          console.warn('Failed to start speech synthesis:', err);
+          stop();
+        }
+      }, 50);
     },
     [stop, onActiveParagraphChange]
   );
 
+  // Chrome bug keepalive: Chromium SpeechSynthesis can silently stall after 15 seconds.
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
   const play = useCallback(() => {
-    if (!supported || paragraphsRef.current.length === 0) return;
+    if (!supported || paragraphs.length === 0) return;
 
     if (isPaused) {
-      window.speechSynthesis.resume();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+      }
       setIsPlaying(true);
       setIsPaused(false);
       return;
     }
 
-    const startIndex = activeParagraphIndex >= 0 ? activeParagraphIndex : 0;
+    const startIndex =
+      currentIndexRef.current >= 0
+        ? currentIndexRef.current
+        : activeParagraphIndex >= 0
+        ? activeParagraphIndex
+        : 0;
     speakParagraph(startIndex);
-  }, [supported, isPaused, activeParagraphIndex, speakParagraph]);
+  }, [supported, isPaused, paragraphs.length, activeParagraphIndex, speakParagraph]);
 
   const pause = useCallback(() => {
     if (isPlaying && supported) {
-      window.speechSynthesis.pause();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.pause();
+      }
       setIsPlaying(false);
       setIsPaused(true);
     }
@@ -132,32 +261,29 @@ export default function AudioPlayer({
     speakParagraph(prevIdx);
   }, [speakParagraph]);
 
-  // Handle external selection change (e.g. user clicked or pressed Enter on a paragraph directly in canvas)
+  // Handle direct click/play requests on paragraph (ReaderCanvas activation)
   useEffect(() => {
-    if (
-      activeParagraphIndex >= 0 &&
-      activeParagraphIndex !== currentIndexRef.current
-    ) {
-      speakParagraph(activeParagraphIndex);
-    }
-  }, [activeParagraphIndex, speakParagraph]);
-
-  // Handle direct click/play requests on paragraph (even if same index)
-  const initialMountRef = useRef(true);
-  useEffect(() => {
-    if (initialMountRef.current) {
-      initialMountRef.current = false;
-      return;
-    }
-    if (activeParagraphIndex >= 0) {
-      speakParagraph(activeParagraphIndex);
+    if (playRequestId && playRequestId !== prevPlayRequestIdRef.current) {
+      prevPlayRequestIdRef.current = playRequestId;
+      if (activeParagraphIndex >= 0) {
+        speakParagraph(activeParagraphIndex);
+      }
     }
   }, [playRequestId, activeParagraphIndex, speakParagraph]);
 
   // Cleanup on unmount or when text changes
   useEffect(() => {
     return () => {
+      if (speakTimerRef.current) {
+        clearTimeout(speakTimerRef.current);
+        speakTimerRef.current = null;
+      }
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (utteranceRef.current) {
+          utteranceRef.current.onend = null;
+          utteranceRef.current.onerror = null;
+          utteranceRef.current = null;
+        }
         window.speechSynthesis.cancel();
       }
     };

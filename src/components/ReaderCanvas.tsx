@@ -101,6 +101,20 @@ export default function ReaderCanvas({
     }
   }, []);
 
+  const handleParagraphActivation = useCallback(
+    (idx: number) => {
+      // Do not trigger read-aloud if the user is currently selecting/highlighting text
+      if (typeof window !== 'undefined') {
+        const selection = window.getSelection();
+        if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
+          return;
+        }
+      }
+      onParagraphClick?.(idx);
+    },
+    [onParagraphClick]
+  );
+
   return (
     <article
       ref={containerRef}
@@ -226,7 +240,7 @@ export default function ReaderCanvas({
               <div
                 key={idx}
                 ref={isActive ? activeParagraphRef : null}
-                onClick={() => onParagraphClick?.(idx)}
+                onClick={() => handleParagraphActivation(idx)}
                 className={`p-4 rounded-xl border transition-colors duration-150 cursor-pointer shadow-sm group ${
                   isActive ? 'ring-2 ring-offset-2' : 'hover:border-opacity-80'
                 }`}
@@ -274,7 +288,7 @@ export default function ReaderCanvas({
             <div
               key={idx}
               ref={isActive ? activeParagraphRef : null}
-              onClick={() => onParagraphClick?.(idx)}
+              onClick={() => handleParagraphActivation(idx)}
               className={`group relative rounded-xl transition-colors duration-150 cursor-pointer p-4 -mx-4 ${
                 isActive
                   ? 'border-l-4 shadow-sm'
